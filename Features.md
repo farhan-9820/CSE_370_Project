@@ -15,7 +15,7 @@ _Students can view other students' profiles and form a group based on their inte
 
 **Slot Booking**
 
-_ Groups can request supervisors for their thesis. There would be a limit on the number of requesting supervisors. After requesting, supervisors can view the groups and students that have requested to supervise. The supervisor can accept or reject the request. The supervisor can only accept if it does not cross their group limit. Upon approval, all the other requests by that group would be removed._
+_Groups can request supervisors for their thesis. There would be a limit on the number of requesting supervisors. After requesting, supervisors can view the groups and students that have requested to supervise. The supervisor can accept or reject the request. The supervisor can only accept if it does not cross their group limit. Upon approval, all the other requests by that group would be removed._
 
 ---
 
@@ -52,3 +52,4 @@ _Students and supervisors search recent theses from the university’s existing 
 **AI-Powered Workflow Assistant**
 
 _An AI feature (using a free API like Hugging Face’s Transformers for text summarization) summarizes thesis abstracts, balances supervisor workloads by suggesting slot allocations, and generates draft feedback for supervisors. The AI integrates with the system via a wrapper API_.
+
