@@ -53,3 +53,26 @@ This project is a comprehensive Thesis Management and Information Website design
 - [Features.md](./Features.md) — Full list and descriptions of all features.
 
 ---
+
+
+
+
+# Entity-Relationship Diagrams
+
+## Visual Previews
+
+### PNG Version
+![ER Diagram PNG](./diagram.png)
+
+### SVG Version
+![ER Diagram SVG](./diagram.svg)
+
+---
+
+## Open in Excalidraw
+
+If you'd like to edit or view the diagram interactively, click below:
+
+- [Open diagram.excalidraw in Excalidraw](https://excalidraw.com/#url=https://raw.githubusercontent.com/farhan-9820/CSE_370_Project/main/EER/diagram.excalidraw)
+
+<sub>If clicking the link doesn't work, download the `.excalidraw` file and upload it manually at [excalidraw.com](https://excalidraw.com/).</sub>
