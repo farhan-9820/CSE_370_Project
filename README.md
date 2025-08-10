@@ -57,7 +57,7 @@ This project is a comprehensive Thesis Management and Information Website design
 
 
 
-# Entity-Relationship Diagrams
+# Enhanced Entity-Relationship Diagrams
 
 ## Visual Previews
 
