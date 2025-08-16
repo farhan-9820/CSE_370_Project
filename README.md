@@ -63,4 +63,8 @@ This project is a comprehensive Thesis Management and Information Website design
 
 ![ER Diagram SVG](./EER/EER%20diagram.svg)
 
+# Database Schema Diagram
+
+![Schema Diagram SVG](./Schema/schema.svg)
+
 ---
