@@ -1,7 +1,7 @@
 -- Student Table
 CREATE TABLE Student (
     id INT PRIMARY KEY,
-    group_id INT,
+    group_id INT NULL,
     name VARCHAR(255),
     mail VARCHAR(255),
     cred_count INT,
@@ -11,9 +11,10 @@ CREATE TABLE Student (
 -- StudentPass Table
 CREATE TABLE StudentPass (
     stu_id INT PRIMARY KEY,
-    pass VARCHAR,
+    pass VARCHAR(255),
     FOREIGN KEY (stu_id) REFERENCES Student(id)
 );
+
 
 -- StudentInterests Table
 CREATE TABLE StudentInterests (
@@ -43,7 +44,7 @@ CREATE TABLE Faculty (
 -- FacultyPass Table
 CREATE TABLE FacultyPass (
     fac_id INT PRIMARY KEY,
-    pass VARCHAR,
+    pass VARCHAR(255),
     FOREIGN KEY (fac_id) REFERENCES Faculty(id)
 );
 
@@ -74,7 +75,7 @@ CREATE TABLE FacultyConsultationHrs (
 -- Admin Table
 CREATE TABLE Admin (
     id INT PRIMARY KEY,
-    pass VARCHAR,
+    pass VARCHAR(255),
     name VARCHAR(255),
     mail VARCHAR(255)
 );
