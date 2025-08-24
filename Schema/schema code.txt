@@ -1,11 +1,83 @@
-dbdiagram-logo
-unsaved
-Untitled Diagram
+Table Student {
+  id int
+  group_id int
+  name varchar
+  mail varchar
+  cred_count int
+  curr_sem int
 
-Upgrade
-Help
-Avatar
-93949596979899100101102103104105106107108109110111112113114115
+  indexes {
+    id [pk]
+  }
+
+}
+
+Table StudentPass {
+  stu_id int pk
+  pass varchar
+}
+
+Table StudentInterests {
+  stu_id int
+  interest varchar
+
+  indexes {
+    (stu_id, interest) [pk]
+  }
+}
+
+Table StudentLinks {
+  stu_id int
+  link varchar
+
+  indexes {
+    (stu_id, link) [pk]
+  }
+}
+
+Table Faculty {
+  id int
+  name varchar
+  mail varchar
+  slot_available bool
+  status bool
+
+  indexes {
+    id [pk]
+  }
+}
+
+Table FacultyPass {
+  fac_id int pk
+  pass varchar
+}
+
+Table FacultyInterests {
+  fac_id int
+  interest varchar
+
+  indexes {
+    (fac_id, interest) [pk]
+  }
+}
+
+Table FacultyLinks {
+  fac_id int
+  link varchar
+
+  indexes {
+    (fac_id, link) [pk]
+  }
+}
+
+Table FacultyConsultationHrs {
+  fac_id int
+  con_hour varchar
+
+  indexes {
+    (fac_id, con_hour) [pk]
+  }
+}
 
 Table Admin {
   id int
@@ -16,22 +88,100 @@ Table Admin {
   indexes {
     id [pk]
   }
+}
 
+Table Group {
+  id int pk
+  topic varchar
+  sup_id int
+  cosup1_id int
+  cosup2_id int
+}
 
-🧑‍💻 As-code Embedded Analytics
-Already modeling as-code in dbdiagram? Holistics extends that workflow to embedded analytics—programmable, version-controlled, and dev-friendly.
+Table GroupInterests {
+  group_id int
+  interest varchar
 
-From Holistics folks with love
+  indexes {
+    (group_id, interest) [pk]
+  }
+}
 
+Table ReqSupervisor {
+  group_id int
+  sup_id int
 
-1
+  indexes {
+  (group_id, sup_id) [pk]
+  }
+}
 
+Table ReqCosupervisor {
+  group_id int
+  cosup_id int
 
-2
-3
-4
-5
+  indexes {
+  (group_id, cosup_id) [pk]
+  }
+}
 
-Show:
-6
+Table FacultyFile {
+  id int pk
+  fac_id int
+  subject varchar
+  remarks varchar
+  file_link varchar
+  date datetime
+}
 
+Table GroupFile {
+  id int pk
+  group_id int
+  reply_file_id int
+  subject varchar
+  remarks varchar
+  file_link varchar
+  date datetime
+}
+
+Table Meet {
+  group_id int
+  fac_id int
+  date_time datetime
+  duration int
+  status varchar
+
+  indexes {
+    (group_id, fac_id, date_time) [pk]
+  }
+}
+
+ref: Student.id < StudentInterests.stu_id
+ref: Student.id < StudentLinks.stu_id
+ref: Student.id < StudentPass.stu_id
+
+ref: Faculty.id < FacultyInterests.fac_id
+ref: Faculty.id < FacultyLinks.fac_id
+ref: Faculty.id < FacultyConsultationHrs.fac_id
+ref: Faculty.id < FacultyPass.fac_id
+
+ref: Group.id < GroupInterests.group_id
+ref: Group.id < Student.group_id
+
+ref: Faculty.id < Group.sup_id
+ref: Faculty.id < Group.cosup1_id
+ref: Faculty.id < Group.cosup2_id
+
+ref: Group.id < ReqSupervisor.group_id
+ref: Faculty.id < ReqSupervisor.sup_id
+
+ref: Group.id < ReqCosupervisor.group_id
+ref: Faculty.id < ReqCosupervisor.cosup_id
+
+ref: Faculty.id < FacultyFile.fac_id
+
+ref: Group.id < GroupFile.group_id
+ref: FacultyFile.id < GroupFile.reply_file_id
+
+ref: Group.id < Meet.group_id
+ref: Faculty.id < Meet.fac_id
