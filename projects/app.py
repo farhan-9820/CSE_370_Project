@@ -128,7 +128,7 @@ def admin_dashboard():
     try:
         # fetch students
         if search_id:
-            cursor.execute("SELECT id, name, mail, 'student' as role FROM Student WHERE id LIKE %s", (f"%{search_id}%",))
+            cursor.execute("SELECT id, name, mail, 'student' as role FROM Student WHERE id LIKE %s", (f"{search_id}",))
         else:
             cursor.execute("SELECT id, name, mail, 'student' as role FROM Student")
         students = cursor.fetchall()
@@ -136,7 +136,7 @@ def admin_dashboard():
 
         # fetch faculty
         if search_id:
-            cursor.execute("SELECT id, name, mail, 'faculty' as role FROM Faculty WHERE id LIKE %s", (f"%{search_id}%",))
+            cursor.execute("SELECT id, name, mail, 'faculty' as role FROM Faculty WHERE id LIKE %s", (f"{search_id}",))
         else:
             cursor.execute("SELECT id, name, mail, 'faculty' as role FROM Faculty")
         faculty = cursor.fetchall()
@@ -185,3 +185,4 @@ def logout():
 
 if __name__ == "__main__":
     app.run(debug=True)
+
