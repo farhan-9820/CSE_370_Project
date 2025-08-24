@@ -29,7 +29,7 @@ def signup_page():
 # ---------------- LOGIN ----------------
 @app.route("/login", methods=["POST"])
 def login():
-    role = request.form.get("role")  # from your frontend dropdown
+    role = request.form.get("role")  
     user_id = request.form.get("id")
     password = request.form.get("password")
 
@@ -99,4 +99,5 @@ def signup():
         conn.close()
 
 if __name__ == "__main__":
+
     app.run(debug=True)
