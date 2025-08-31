@@ -1,5 +1,1 @@
-pip install Flask
-pip install mysql-connector-python
-pip install bcrypt
-pip install Flask-Session
-pip install Flask-Login
+pip install Flask mysql-connector-python bcrypt Flask-Session Flask-Login
