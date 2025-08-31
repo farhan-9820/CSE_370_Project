@@ -100,6 +100,17 @@ CREATE TABLE GroupInterests (
     FOREIGN KEY (group_id) REFERENCES `Group`(id)
 );
 
+
+--Group joininig request table
+CREATE TABLE IF NOT EXISTS GroupJoinRequests (
+     group_id INT,
+     student_id INT,
+     status VARCHAR(50) DEFAULT 'pending',
+     PRIMARY KEY (group_id, student_id),
+     FOREIGN KEY (group_id) REFERENCES `Group`(id),
+     FOREIGN KEY (student_id) REFERENCES Student(id)
+ );
+
 -- ReqSupervisor Table
 CREATE TABLE ReqSupervisor (
     group_id INT,
