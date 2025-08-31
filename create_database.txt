@@ -172,3 +172,10 @@ CREATE TABLE Meet (
 
 ALTER TABLE Student
 ADD CONSTRAINT fk_student_group FOREIGN KEY (group_id) REFERENCES `Group`(id);
+
+
+-- Add missing name field to Group table
+ALTER TABLE `Group` ADD COLUMN name VARCHAR(255) NOT NULL;
+
+-- Make Group id auto-increment
+ALTER TABLE `Group` MODIFY COLUMN id INT AUTO_INCREMENT;
