@@ -41,15 +41,8 @@ _Student groups (e.g., thesis project teams) schedule consultations with supervi
 
 _Supervisors provide feedback on theses or group work via dashboard comments or email. Feedback triggers notifications to students, who can respond in a threaded discussion format (Discord-like)._
 
----
 
-**Thesis Search Wrapper**
 
-_Students and supervisors search recent theses from the university’s existing thesis repository (via a wrapper API). Search supports filters by title, author, or year, displaying metadata and links to original records. They are also able to register for their P3 thesis inside the website._
 
----
 
-**AI-Powered Workflow Assistant**
-
-_An AI feature (using a free API like Hugging Face’s Transformers for text summarization) summarizes thesis abstracts, balances supervisor workloads by suggesting slot allocations, and generates draft feedback for supervisors. The AI integrates with the system via a wrapper API_.
 
