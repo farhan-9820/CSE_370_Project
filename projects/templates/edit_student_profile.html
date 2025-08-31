@@ -1,0 +1,52 @@
+<!-- templates/edit_student_profile.html -->
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Edit Student Profile</title>
+</head>
+<body>
+    <h1>Edit Profile for Student ID: {{ profile.id }}</h1>
+
+    <form action="{{ url_for('edit_student_profile') }}" method="POST">
+        <label for="name">Name:</label>
+        <input type="text" id="name" name="name" value="{{ profile.name }}" required><br>
+
+        <label for="email">Email:</label>
+        <input type="email" id="email" name="email" value="{{ profile.mail }}" required><br>
+
+        <label for="curr_sem">Current Semester:</label>
+        <input type="number" id="curr_sem" name="curr_sem" value="{{ profile.curr_sem }}" required><br>
+
+        <h2>Manage Interests</h2>
+        {% for interest in interests %}
+        <input type="checkbox" name="delete_interests" value="{{ interest }}"> Delete {{ interest }}<br>
+        <input type="hidden" name="original_interests" value="{{ interest }}">
+        <label>Update {{ interest }} to:</label>
+        <input type="text" name="update_interests" value="{{ interest }}"><br>
+        {% endfor %}
+        <label>Add New Interest:</label>
+        <input type="text" name="new_interest"><br>
+
+        <h2>Manage Links</h2>
+        {% for link in links %}
+        <input type="checkbox" name="delete_links" value="{{ link }}"> Delete {{ link }}<br>
+        <input type="hidden" name="original_links" value="{{ link }}">
+        <label>Update {{ link }} to:</label>
+        <input type="text" name="update_links" value="{{ link }}"><br>
+        {% endfor %}
+        <label>Add New Link:</label>
+        <input type="text" name="new_link"><br>
+
+        <input type="submit" value="Save Changes">
+    </form>
+
+    <a href="{{ url_for('student_dashboard') }}">Back to Profile</a>
+    <a href="{{ url_for('logout') }}">Logout</a>
+
+    <footer>
+        <p>© 2025 BRACU Thesis Portal | Designed with Elegance</p>
+    </footer>
+</body>
+</html>

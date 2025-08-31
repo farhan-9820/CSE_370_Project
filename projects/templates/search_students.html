@@ -1,0 +1,46 @@
+<!-- templates/search_students.html -->
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Search Students</title>
+</head>
+<body>
+    <h1>Search Other Students</h1>
+
+    <form action="{{ url_for('search_students') }}" method="POST">
+        <label for="search_term">Search by ID or Name:</label>
+        <input type="text" id="search_term" name="search_term" value="{{ search_term }}">
+        <input type="submit" value="Search">
+    </form>
+
+    <table border="1">
+        <thead>
+            <tr>
+                <th>ID</th>
+                <th>Name</th>
+                <th>Email</th>
+                <th>Action</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for student in students %}
+            <tr>
+                <td>{{ student.id }}</td>
+                <td>{{ student.name }}</td>
+                <td>{{ student.mail }}</td>
+                <td><a href="{{ url_for('view_student_profile', student_id=student.id) }}">View Profile</a></td>
+            </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+
+    <a href="{{ url_for('student_dashboard') }}">Back to My Profile</a>
+    <a href="{{ url_for('logout') }}">Logout</a>
+
+    <footer>
+        <p>© 2025 BRACU Thesis Portal | Designed with Elegance</p>
+    </footer>
+</body>
+</html>

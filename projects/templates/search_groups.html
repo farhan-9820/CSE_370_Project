@@ -1,0 +1,41 @@
+<!-- search_groups.html -->
+<h1>Search Groups</h1>
+
+<form method="post">
+    <label for="search_term">Search by ID or Name:</label>
+    <input type="text" id="search_term" name="search_term">
+    <button type="submit">Search</button>
+</form>
+
+{% if groups %}
+<table>
+    <tr>
+        <th>ID</th>
+        <th>Name</th>
+        <th>Members</th>
+        <th>Action</th>
+    </tr>
+    {% for group in groups %}
+    <tr>
+        <td>{{ group.id }}</td>
+        <td>{{ group.name }}</td>
+        <td>{{ group.member_count }}/5</td>
+        <td>
+            {% if group.member_count < 5 %}
+            <a href="{{ url_for('request_join_group', group_id=group.id) }}">Request to Join</a>
+            {% endif %}
+            <a href="{{ url_for('group_profile', group_id=group.id) }}">View Profile</a>
+        </td>
+    </tr>
+    {% endfor %}
+</table>
+{% else %}
+<p>No groups found.</p>
+{% endif %}
+
+<a href="{{ url_for('student_dashboard') }}">Back to Profile</a>
+<a href="{{ url_for('logout') }}">Logout</a>
+
+<footer>
+    © 2025 BRACU Thesis Portal | Designed with Elegance
+</footer>

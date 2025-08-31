@@ -1,0 +1,72 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Edit Faculty Profile</title>
+</head>
+<body>
+    <div>
+        <h1 style="background-color: #f0f0f0; padding: 10px; border: 2px dashed black;">Edit Profile for Faculty ID: {{ profile.id }}</h1>
+        <p>Welcome to your personalized profile editing space! Please update your details below with care and elegance.</p>
+    </div>
+
+    <form action="{{ url_for('edit_faculty_profile') }}" method="POST">
+        <div>
+            <label for="name">Name:</label>
+            <input type="text" id="name" name="name" value="{{ profile.name }}" required style="border: 1px solid black; padding: 5px;"><br>
+        </div>
+
+        <div>
+            <label for="email">Email:</label>
+            <input type="email" id="email" name="email" value="{{ profile.mail }}" required style="border: 1px solid black; padding: 5px;"><br>
+        </div>
+
+        <div>
+            <h2>Current Consultation Hours</h2>
+            {% for hour in consultation_hours %}
+            <div>
+                <input type="checkbox" name="existing_con_hours" value="{{ hour }}" checked>
+                <label>{{ hour }}</label><br>
+            </div>
+            {% endfor %}
+        </div>
+
+        <div>
+            <h2>Add New Consultation Hour</h2>
+            <select name="new_day" required>
+                <option value="">Select Day</option>
+                <option value="Sunday">Sunday</option>
+                <option value="Monday">Monday</option>
+                <option value="Tuesday">Tuesday</option>
+                <option value="Wednesday">Wednesday</option>
+                <option value="Thursday">Thursday</option>
+                <option value="Friday">Friday</option>
+                <option value="Saturday">Saturday</option>
+            </select>
+            <input type="text" name="new_start_time" placeholder="Start (e.g., 8:00 AM)" pattern="\d{1,2}:\d{2}\s?(AM|PM)" required style="border: 1px solid black; padding: 5px;">
+            <input type="text" name="new_end_time" placeholder="End (e.g., 9:20 AM)" pattern="\d{1,2}:\d{2}\s?(AM|PM)" required style="border: 1px solid black; padding: 5px;"><br>
+        </div>
+
+        <div>
+            <input type="submit" value="Save Changes" style="background-color: #e0e0e0; padding: 10px; border: 2px solid black;">
+        </div>
+    </form>
+
+    <div>
+        <h2>Additional Notes</h2>
+        <p>Enhance your profile by adding interests, links, or more consultation hours on the main page when needed!</p>
+        <a href="{{ url_for('faculty_dashboard') }}">Back to Profile</a>
+    </div>
+
+    <div>
+        <a href="{{ url_for('logout') }}">Logout</a>
+    </div>
+
+    <footer>
+        <table>
+            <tr><td><h3>© 2025 BRACU Thesis Portal</h3></td><td><p>Designed with Elegance</p></td></tr>
+        </table>
+    </footer>
+</body>
+</html>

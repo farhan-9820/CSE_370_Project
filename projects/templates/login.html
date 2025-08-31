@@ -67,7 +67,8 @@
             document.getElementById("login-form").classList.remove("active");
             document.getElementById("signup-form").classList.remove("active");
         }
-
+        // Show login form by default
+        // showLogin();
     </script>
 </body>
 </html>
@@ -75,3 +76,375 @@
 
 
 
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<!-- <!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>BRACU Thesis</title>
+    <style>
+        :root {
+            --primary-color: #007bff; /* Blue for buttons and accents */
+            --secondary-color: #6c757d; /* Gray for text */
+            --background-color: #f8f9fa; /* Light background */
+            --card-background: #ffffff; /* White card */
+            --text-color: #333333; /* Dark text */
+            --shadow-color: rgba(0, 0, 0, 0.1); /* Soft shadow */
+            --gradient-start: #007bff;
+            --gradient-end: #6610f2;
+        }
+
+        /* Dark theme */
+        body.dark-theme {
+            --primary-color: #0d6efd;
+            --secondary-color: #adb5bd;
+            --background-color: #121212;
+            --card-background: #1e1e1e;
+            --text-color: #e0e0e0;
+            --shadow-color: rgba(0, 0, 0, 0.5);
+            --gradient-start: #6610f2;
+            --gradient-end: #007bff;
+        }
+
+        /* Modern theme 1: Ocean */
+        body.ocean-theme {
+            --primary-color: #20c997;
+            --secondary-color: #6f42c1;
+            --background-color: #e0f7fa;
+            --card-background: #ffffff;
+            --text-color: #004d40;
+            --shadow-color: rgba(0, 128, 128, 0.1);
+            --gradient-start: #20c997;
+            --gradient-end: #0dcaf0;
+        }
+
+        /* Modern theme 2: Sunset */
+        body.sunset-theme {
+            --primary-color: #fd7e14;
+            --secondary-color: #dc3545;
+            --background-color: #fff3cd;
+            --card-background: #ffffff;
+            --text-color: #4d0000;
+            --shadow-color: rgba(255, 69, 0, 0.1);
+            --gradient-start: #fd7e14;
+            --gradient-end: #ffc107;
+        }
+
+        /* Modern theme 3: Forest */
+        body.forest-theme {
+            --primary-color: #198754;
+            --secondary-color: #ffc107;
+            --background-color: #d4edda;
+            --card-background: #ffffff;
+            --text-color: #003d00;
+            --shadow-color: rgba(34, 139, 34, 0.1);
+            --gradient-start: #198754;
+            --gradient-end: #28a745;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, var(--gradient-start), var(--gradient-end));
+            color: var(--text-color);
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            min-height: 100vh;
+            margin: 0;
+            transition: background 0.5s ease;
+            position: relative;
+            overflow: hidden;
+        }
+
+        /* Subtle particle background for awe effect */
+        body::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: url('data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100"><circle cx="10" cy="10" r="1" fill="rgba(255,255,255,0.2)"/><circle cx="90" cy="20" r="2" fill="rgba(255,255,255,0.3)"/><circle cx="50" cy="80" r="1.5" fill="rgba(255,255,255,0.1)"/><circle cx="30" cy="50" r="2.5" fill="rgba(255,255,255,0.25)"/><circle cx="70" cy="60" r="1" fill="rgba(255,255,255,0.15)"/></svg>') repeat;
+            opacity: 0.1;
+            animation: particles 20s linear infinite;
+        }
+
+        @keyframes particles {
+            0% { transform: translateY(0); }
+            100% { transform: translateY(-100px); }
+        }
+
+        .container {
+            background: var(--card-background);
+            border-radius: 20px;
+            box-shadow: 0 10px 30px var(--shadow-color);
+            padding: 40px;
+            width: 100%;
+            max-width: 450px;
+            text-align: center;
+            transition: transform 0.3s ease, box-shadow 0.3s ease;
+            position: relative;
+            z-index: 1;
+        }
+
+        .container:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 15px 40px var(--shadow-color);
+        }
+
+        h1 {
+            font-size: 2.5em;
+            margin-bottom: 20px;
+            color: var(--primary-color);
+            text-shadow: 1px 1px 2px rgba(0, 0, 0, 0.1);
+            animation: fadeInDown 1s ease;
+        }
+
+        @keyframes fadeInDown {
+            from { opacity: 0; transform: translateY(-20px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        .theme-switcher {
+            position: absolute;
+            top: 20px;
+            right: 20px;
+            z-index: 2;
+        }
+
+        .theme-switcher select {
+            padding: 8px 12px;
+            border: 1px solid var(--secondary-color);
+            border-radius: 5px;
+            background: var(--card-background);
+            color: var(--text-color);
+            cursor: pointer;
+        }
+
+        .toggle-buttons button {
+            background: linear-gradient(135deg, var(--primary-color), var(--secondary-color));
+            color: white;
+            border: none;
+            padding: 12px 24px;
+            margin: 0 10px;
+            border-radius: 50px;
+            cursor: pointer;
+            font-size: 1em;
+            transition: background 0.3s ease, transform 0.3s ease;
+            box-shadow: 0 4px 10px var(--shadow-color);
+        }
+
+        .toggle-buttons button:hover {
+            transform: scale(1.05);
+            background: linear-gradient(135deg, var(--secondary-color), var(--primary-color));
+        }
+
+        .form-section {
+            display: none;
+            animation: fadeIn 0.5s ease;
+        }
+
+        .form-section.active {
+            display: block;
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; }
+            to { opacity: 1; }
+        }
+
+        h2 {
+            font-size: 1.8em;
+            margin-bottom: 20px;
+            color: var(--text-color);
+        }
+
+        select, input {
+            width: 100%;
+            padding: 12px;
+            margin: 10px 0;
+            border: 1px solid var(--secondary-color);
+            border-radius: 10px;
+            background: var(--background-color);
+            color: var(--text-color);
+            font-size: 1em;
+            transition: border-color 0.3s ease;
+        }
+
+        select:focus, input:focus {
+            border-color: var(--primary-color);
+            outline: none;
+        }
+
+        button[type="submit"] {
+            background: var(--primary-color);
+            color: white;
+            border: none;
+            padding: 12px;
+            border-radius: 10px;
+            cursor: pointer;
+            font-size: 1em;
+            transition: background 0.3s ease;
+            width: 100%;
+            margin-top: 10px;
+        }
+
+        button[type="submit"]:hover {
+            background: darken(var(--primary-color), 10%);
+        }
+
+        button[type="button"] {
+            background: transparent;
+            color: var(--secondary-color);
+            border: none;
+            cursor: pointer;
+            font-size: 0.9em;
+        }
+
+        /* Add icons for inputs */
+        .input-wrapper {
+            position: relative;
+            margin: 10px 0;
+        }
+
+        .input-wrapper input, .input-wrapper select {
+            padding-left: 40px;
+        }
+
+        .input-wrapper::before {
+            content: '';
+            position: absolute;
+            left: 15px;
+            top: 50%;
+            transform: translateY(-50%);
+            font-size: 1.2em;
+            color: var(--secondary-color);
+        }
+
+        .role-wrapper::before { content: '👤'; }
+        .id-wrapper::before { content: '#'; }
+        .name-wrapper::before { content: '📛'; }
+        .email-wrapper::before { content: '✉️'; }
+        .password-wrapper::before { content: '🔒'; }
+
+        /* Footer for awe */
+        footer {
+            margin-top: 20px;
+            font-size: 0.8em;
+            color: var(--secondary-color);
+        }
+    </style>
+</head>
+<body>
+    <div class="theme-switcher">
+        <select id="theme-select" onchange="changeTheme(this.value)">
+            <option value="">Light (Default)</option>
+            <option value="dark-theme">Dark</option>
+            <option value="ocean-theme">Ocean</option>
+            <option value="sunset-theme">Sunset</option>
+            <option value="forest-theme">Forest</option>
+        </select>
+    </div>
+
+    <div class="container">
+        <h1>BRACU Thesis</h1>
+        <div class="toggle-buttons">
+            <button onclick="showLogin()">Log In</button>
+            <button onclick="showSignup()">Sign Up</button>
+        </div>
+
+        <div id="login-form" class="form-section active">
+            <h2>Log In as</h2>
+            <form action="/login" method="POST">
+                <div class="input-wrapper role-wrapper">
+                    <select name="role" required>
+                        <option value="">Select Role</option>
+                        <option value="student">Student</option>
+                        <option value="faculty">Faculty</option>
+                        <option value="admin">Admin</option>
+                    </select>
+                </div>
+                <div class="input-wrapper id-wrapper">
+                    <input type="text" name="id" placeholder="ID" required>
+                </div>
+                <div class="input-wrapper password-wrapper">
+                    <input type="password" name="password" placeholder="Password" required>
+                </div>
+                <button type="submit">Log In</button>
+                <button type="button" onclick="goBack()">← Back</button>
+            </form>
+        </div>
+
+        <div id="signup-form" class="form-section">
+            <h2>Sign Up as</h2>
+            <form action="/signup" method="POST">
+                <div class="input-wrapper role-wrapper">
+                    <select name="role" required>
+                        <option value="">Select Role</option>
+                        <option value="student">Student</option>
+                        <option value="faculty">Faculty</option>
+                        <option value="admin">Admin</option>
+                    </select>
+                </div>
+                <div class="input-wrapper id-wrapper">
+                    <input type="text" name="id" placeholder="ID" required>
+                </div>
+                <div class="input-wrapper name-wrapper">
+                    <input type="text" name="name" placeholder="Name" required>
+                </div>
+                <div class="input-wrapper email-wrapper">
+                    <input type="email" name="email" placeholder="Email" required>
+                </div>
+                <div class="input-wrapper password-wrapper">
+                    <input type="password" name="password" placeholder="Password" required>
+                </div>
+                <button type="submit">Sign Up</button>
+                <button type="button" onclick="goBack()">← Back</button>
+            </form>
+        </div>
+
+        <footer>© 2025 BRACU Thesis Portal | Designed with Elegance</footer>
+    </div>
+
+    <script>
+        function showLogin() {
+            document.getElementById("login-form").classList.add("active");
+            document.getElementById("signup-form").classList.remove("active");
+        }
+        function showSignup() {
+            document.getElementById("signup-form").classList.add("active");
+            document.getElementById("login-form").classList.remove("active");
+        }
+        function goBack() {
+            document.getElementById("login-form").classList.remove("active");
+            document.getElementById("signup-form").classList.remove("active");
+        }
+
+        function changeTheme(theme) {
+            document.body.className = theme;
+        }
+
+        // Show login form by default
+        showLogin();
+    </script>
+</body>
+</html>  -->

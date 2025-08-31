@@ -1,0 +1,96 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Faculty Profile</title>
+</head>
+<body>
+    <div>
+        <h1 style="border-bottom: 2px solid black;">Faculty Profile: {{ profile.name }}</h1>
+        <table>
+            <tr><td><strong>ID:</strong></td><td>{{ profile.id }}</td></tr>
+            <tr><td><strong>Email:</strong></td><td>{{ profile.mail }}</td></tr>
+        </table>
+    </div>
+
+    <div>
+        <h2>Interests / Research Topics</h2>
+        <ul style="list-style-type: square;">
+            {% for interest in interests %}
+            <li>{{ interest }}</li>
+            {% endfor %}
+        </ul>
+    </div>
+
+    <div>
+        <h2>Links</h2>
+        <ul style="list-style-type: circle;">
+            {% for link in links %}
+            <li><a href="{{ link }}">{{ link }}</a></li>
+            {% endfor %}
+        </ul>
+    </div>
+
+    <div>
+        <h2>Consultation Hours</h2>
+        <ul style="list-style-type: disc;">
+            {% for hour in consultation_hours %}
+            <li>{{ hour }}</li>
+            {% endfor %}
+        </ul>
+    </div>
+
+    {% if is_own %}
+    <div>
+        <h2>Add Interest / Research Topic</h2>
+        <form action="{{ url_for('faculty_dashboard') }}" method="POST">
+            <input type="text" name="interest" placeholder="Enter interest or research topic" required>
+            <input type="hidden" name="add_interest" value="1">
+            <input type="submit" value="Add Interest">
+        </form>
+    </div>
+
+    <div>
+        <h2>Add Link</h2>
+        <form action="{{ url_for('faculty_dashboard') }}" method="POST">
+            <input type="text" name="link" placeholder="Enter link (e.g., GitHub)" required>
+            <input type="hidden" name="add_link" value="1">
+            <input type="submit" value="Add Link">
+        </form>
+    </div>
+
+    <div>
+        <h2>Add Consultation Hour</h2>
+        <form action="{{ url_for('faculty_dashboard') }}" method="POST">
+            <select name="day" required>
+                <option value="Sunday">Sunday</option>
+                <option value="Monday">Monday</option>
+                <option value="Tuesday">Tuesday</option>
+                <option value="Wednesday">Wednesday</option>
+                <option value="Thursday">Thursday</option>
+                <option value="Friday">Friday</option>
+                <option value="Saturday">Saturday</option>
+            </select>
+            <input type="text" name="start_time" placeholder="Start (e.g., 8:00 AM)" pattern="\d{1,2}:\d{2}\s?(AM|PM)" required>
+            <input type="text" name="end_time" placeholder="End (e.g., 9:20 AM)" pattern="\d{1,2}:\d{2}\s?(AM|PM)" required>
+            <input type="hidden" name="add_con_hour" value="1">
+            <input type="submit" value="Add Consultation Hour">
+        </form>
+    </div>
+
+    <div>
+        <a href="{{ url_for('edit_faculty_profile') }}">Edit Profile</a>
+        <a href="{{ url_for('search_students') }}">Search Student Profiles</a>
+    </div>
+    {% endif %}
+
+    <div>
+        <a href="{{ url_for('logout') }}">Logout</a>
+    </div>
+
+    <footer>
+        <h3>© 2025 BRACU Thesis Portal | Designed with Elegance</h3>
+    </footer>
+</body>
+</html>

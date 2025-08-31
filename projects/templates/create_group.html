@@ -1,0 +1,15 @@
+<!-- create_group.html -->
+<h1>Create a New Group</h1>
+
+<form method="post">
+    <label for="group_name">Group Name:</label>
+    <input type="text" id="group_name" name="group_name" required>
+    <button type="submit">Create Group</button>
+</form>
+
+<a href="{{ url_for('student_dashboard') }}">Back to Profile</a>
+<a href="{{ url_for('logout') }}">Logout</a>
+
+<footer>
+    © 2025 BRACU Thesis Portal | Designed with Elegance
+</footer>

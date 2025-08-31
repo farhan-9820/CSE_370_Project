@@ -1,0 +1,48 @@
+<!-- group_profile.html -->
+<h1>Group Profile: {{ group.name }}</h1>
+<p>ID: {{ group_id }}</p>
+
+<h2>Members</h2>
+<ul>
+    {% for member in members %}
+    <li>{{ member.name }} (ID: {{ member.id }}, Email: {{ member.mail }})</li>
+    {% endfor %}
+</ul>
+
+{% if is_member %}
+<h2>Pending Join Requests</h2>
+{% if requests %}
+<table>
+    <tr>
+        <th>ID</th>
+        <th>Name</th>
+        <th>Email</th>
+        <th>Action</th>
+    </tr>
+    {% for req in requests %}
+    <tr>
+        <td>{{ req.id }}</td>
+        <td>{{ req.name }}</td>
+        <td>{{ req.mail }}</td>
+        <td>
+            <form action="{{ url_for('accept_join_request', group_id=group_id, student_id=req.id) }}" method="post" style="display:inline;">
+                <button type="submit">Accept</button>
+            </form>
+            <form action="{{ url_for('reject_join_request', group_id=group_id, student_id=req.id) }}" method="post" style="display:inline;">
+                <button type="submit">Reject</button>
+            </form>
+        </td>
+    </tr>
+    {% endfor %}
+</table>
+{% else %}
+<p>No pending requests.</p>
+{% endif %}
+{% endif %}
+
+<a href="{{ url_for('student_dashboard') }}">Back to Profile</a>
+<a href="{{ url_for('logout') }}">Logout</a>
+
+<footer>
+    © 2025 BRACU Thesis Portal | Designed with Elegance
+</footer>

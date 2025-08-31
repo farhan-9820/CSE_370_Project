@@ -1,3 +1,160 @@
+<!-- <!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Admin Dashboard - BRACU Thesis</title>
+    <style>
+        /* Reuse styles from login.html */
+        :root {
+            --primary-color: #007bff;
+            --secondary-color: #6c757d;
+            --background-color: #f8f9fa;
+            --card-background: #ffffff;
+            --text-color: #333333;
+            --shadow-color: rgba(0, 0, 0, 0.1);
+            --gradient-start: #007bff;
+            --gradient-end: #6610f2;
+        }
+
+        body.dark-theme {
+            --primary-color: #0d6efd;
+            --secondary-color: #adb5bd;
+            --background-color: #121212;
+            --card-background: #1e1e1e;
+            --text-color: #e0e0e0;
+            --shadow-color: rgba(0, 0, 0, 0.5);
+            --gradient-start: #6610f2;
+            --gradient-end: #007bff;
+        }
+
+        /* Add other themes (ocean, sunset, forest) similarly from login.html */
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, var(--gradient-start), var(--gradient-end));
+            color: var(--text-color);
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            min-height: 100vh;
+            margin: 0;
+            transition: background 0.5s ease;
+            position: relative;
+            overflow: hidden;
+        }
+
+        /* Particle background, animations, etc., from login.html */
+
+        .container {
+            background: var(--card-background);
+            border-radius: 20px;
+            box-shadow: 0 10px 30px var(--shadow-color);
+            padding: 40px;
+            width: 100%;
+            max-width: 800px;  /* Wider for table */
+            text-align: center;
+            transition: transform 0.3s ease, box-shadow 0.3s ease;
+            position: relative;
+            z-index: 1;
+        }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-top: 20px;
+        }
+
+        th, td {
+            padding: 12px;
+            border: 1px solid var(--secondary-color);
+            text-align: left;
+        }
+
+        th {
+            background: var(--primary-color);
+            color: white;
+        }
+
+        a {
+            color: var(--primary-color);
+            text-decoration: none;
+        }
+
+        a:hover {
+            text-decoration: underline;
+        }
+
+        /* Other styles from login.html */
+    </style>
+</head>
+<body>
+    <div class="theme-switcher">
+        
+        <select id="theme-select" onchange="changeTheme(this.value)">
+            <option value="">Light (Default)</option>
+            <option value="dark-theme">Dark</option>
+            <option value="ocean-theme">Ocean</option>
+            <option value="sunset-theme">Sunset</option>
+            <option value="forest-theme">Forest</option>
+        </select>
+    </div>
+
+    <div class="container">
+        <h1>Admin Dashboard</h1>
+        <a href="/logout">Logout</a>
+
+        <form action="/admin_dashboard" method="POST">
+            <div class="input-wrapper">
+                <input type="text" name="search_id" placeholder="Search by ID" value="{{ search_id }}">
+            </div>
+            <button type="submit">Search</button>
+        </form>
+
+        <table>
+            <thead>
+                <tr>
+                    <th>ID</th>
+                    <th>Name</th>
+                    <th>Email</th>
+                    <th>Role</th>
+                    <th>Action</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for user in users %}
+                <tr>
+                    <td>{{ user.id }}</td>
+                    <td>{{ user.name }}</td>
+                    <td>{{ user.mail }}</td>
+                    <td>{{ user.role }}</td>
+                    <td><a href="/edit_password/{{ user.role }}/{{ user.id }}">Edit Password</a></td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+
+        <footer>© 2025 BRACU Thesis Portal | Designed with Elegance</footer>
+    </div>
+
+    <script>
+        // Theme change function from login.html
+        function changeTheme(theme) {
+            document.body.className = theme;
+        }
+    </script>
+</body>
+</html> -->
+
+
+
+
+
+
+
+
+
+
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -6,6 +163,16 @@
     <title>Admin Dashboard - BRACU Thesis</title>
 </head>
 <body>
+    <!-- <div>
+        <select id="theme-select" onchange="changeTheme(this.value)">
+            <option value="">Light (Default)</option>
+            <option value="dark-theme">Dark</option>
+            <option value="ocean-theme">Ocean</option>
+            <option value="sunset-theme">Sunset</option>
+            <option value="forest-theme">Forest</option>
+        </select>
+    </div> -->
+
     <h1>Admin Dashboard</h1>
     <p>Welcome to the Admin Dashboard!</p>
 
@@ -44,11 +211,10 @@
         <p>© 2025 BRACU Thesis Portal | Designed with Elegance</p>
     </footer>
 
-<!--     <script>
+    <!-- <script>
         function changeTheme(theme) {
             document.body.className = theme;
         }
     </script> -->
 </body>
-
 </html>

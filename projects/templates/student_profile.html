@@ -1,0 +1,61 @@
+<!-- templates/student_profile.html -->
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Student Profile</title>
+</head>
+<body>
+    <h1>Student Profile: {{ profile.name }}</h1>
+    <p>ID: {{ profile.id }}</p>
+    <p>Email: {{ profile.mail }}</p>
+    <p>Current Semester: {{ profile.curr_sem }}</p>
+    <p>Group ID: {{ profile.group_id if profile.group_id else 'Not in a group' }}</p>
+
+    <h2>Interests</h2>
+    <ul>
+        {% for interest in interests %}
+        <li>{{ interest }}</li>
+        {% endfor %}
+    </ul>
+
+    <h2>Links</h2>
+    <ul>
+        {% for link in links %}
+        <li><a href="{{ link }}">{{ link }}</a></li>
+        {% endfor %}
+    </ul>
+
+    {% if is_own %}
+    <h2>Add Interest</h2>
+    <form action="{{ url_for('student_dashboard') }}" method="POST">
+        <input type="text" name="interest" placeholder="Enter interest" required>
+        <input type="hidden" name="add_interest" value="1">
+        <input type="submit" value="Add Interest">
+    </form>
+
+    <h2>Add Link</h2>
+    <form action="{{ url_for('student_dashboard') }}" method="POST">
+        <input type="text" name="link" placeholder="Enter link (e.g., GitHub)" required>
+        <input type="hidden" name="add_link" value="1">
+        <input type="submit" value="Add Link">
+    </form>
+
+    <a href="{{ url_for('edit_student_profile') }}">Edit Profile (including Interests and Links)</a>
+    <a href="{{ url_for('search_students') }}">Search Other Students</a>
+    {% if not profile.group_id %}
+    <a href="{{ url_for('create_group') }}">Create a Group</a>
+    <a href="{{ url_for('search_groups') }}">Search and Join a Group</a>
+    {% else %}
+    <a href="{{ url_for('group_profile', group_id=profile.group_id) }}">View Group Profile</a>
+    {% endif %}
+    {% endif %}
+
+    <a href="{{ url_for('logout') }}">Logout</a>
+
+    <footer>
+        <p>© 2025 BRACU Thesis Portal | Designed with Elegance</p>
+    </footer>
+</body>
+</html>
