@@ -41,8 +41,7 @@
         </ul>
     </div>
 
-    {% if is_own_profile %}
-
+    {% if is_own %}
     <div>
         <a href="{{ url_for('edit_faculty_profile') }}">Edit Profile</a>
         <a href="{{ url_for('search_students') }}">Search Student Profiles</a>

@@ -27,9 +27,8 @@
         {% endfor %}
     </ul>
 
-    {% if is_own_profile %}
-
-    <a href="{{ url_for('edit_student_profile') }}">Edit Profile (including Interests and Links)</a>
+    {% if is_own %}
+    <a href="{{ url_for('edit_student_profile') }}">Edit Profile</a>
     <a href="{{ url_for('search_students') }}">Search Other Students</a>
     {% if not profile.group_id %}
     <a href="{{ url_for('create_group') }}">Create a Group</a>
