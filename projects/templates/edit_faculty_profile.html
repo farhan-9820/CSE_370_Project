@@ -6,35 +6,42 @@
     <title>Edit Faculty Profile</title>
 </head>
 <body>
-    <div>
-        <h1 style="background-color: #f0f0f0; padding: 10px; border: 2px dashed black;">Edit Profile for Faculty ID: {{ profile.id }}</h1>
-        <p>Welcome to your personalized profile editing space! Please update your details below with care and elegance.</p>
-    </div>
+    <h1>Edit Profile for Faculty ID: {{ profile.id }}</h1>
 
     <form action="{{ url_for('edit_faculty_profile') }}" method="POST">
-        <div>
-            <label for="name">Name:</label>
-            <input type="text" id="name" name="name" value="{{ profile.name }}" required style="border: 1px solid black; padding: 5px;"><br>
-        </div>
+        <label for="name">Name:</label>
+        <input type="text" id="name" name="name" value="{{ profile.name }}" required><br>
 
-        <div>
-            <label for="email">Email:</label>
-            <input type="email" id="email" name="email" value="{{ profile.mail }}" required style="border: 1px solid black; padding: 5px;"><br>
-        </div>
+        <label for="email">Email:</label>
+        <input type="email" id="email" name="email" value="{{ profile.mail }}" required><br>
 
-        <div>
-            <h2>Current Consultation Hours</h2>
-            {% for hour in consultation_hours %}
-            <div>
-                <input type="checkbox" name="existing_con_hours" value="{{ hour }}" checked>
-                <label>{{ hour }}</label><br>
-            </div>
-            {% endfor %}
-        </div>
+        <h2>Manage Interests</h2>
+        {% for interest in interests %}
+        <input type="checkbox" name="delete_interests" value="{{ interest }}"> Delete {{ interest }}<br>
+        <input type="hidden" name="original_interests" value="{{ interest }}">
+        <label>Update {{ interest }} to:</label>
+        <input type="text" name="update_interests" value="{{ interest }}"><br>
+        {% endfor %}
+        <label>Add New Interest:</label>
+        <input type="text" name="new_interest"><br>
 
-        <div>
-            <h2>Add New Consultation Hour</h2>
-            <select name="new_day">
+        <h2>Manage Links</h2>
+        {% for link in links %}
+        <input type="checkbox" name="delete_links" value="{{ link }}"> Delete {{ link }}<br>
+        <input type="hidden" name="original_links" value="{{ link }}">
+        <label>Update {{ link }} to:</label>
+        <input type="text" name="update_links" value="{{ link }}"><br>
+        {% endfor %}
+        <label>Add New Link:</label>
+        <input type="text" name="new_link"><br>
+
+        <h2>Manage Consultation Hours</h2>
+        {% for hour in consultation_hours %}
+        <input type="checkbox" name="delete_con_hours" value="{{ hour }}"> Delete {{ hour }}<br>
+        <input type="hidden" name="original_con_hours" value="{{ hour }}">
+        {% endfor %}
+        <label>Add New Consultation Hour:</label><br>
+        <select name="new_day">
                 <option value="">Select Day</option>
                 <option value="Sunday">Sunday</option>
                 <option value="Monday">Monday</option>
@@ -43,41 +50,31 @@
                 <option value="Thursday">Thursday</option>
                 <option value="Friday">Friday</option>
                 <option value="Saturday">Saturday</option>
-            </select>
-            <select name="new_start_time">
-                <option value="">Select Start Time</option>
-                <option value="8:00 AM">8:00 AM</option>
-                <option value="9:30 AM">9:30 AM</option>
-                <option value="11:00 AM">11:00 AM</option>
-                <option value="12:30 PM">12:30 PM</option>
-                <option value="2:00 PM">2:00 PM</option>
-                <option value="3:30 PM">3:30 PM</option>
-            </select>
-            <select name="new_end_time">
-                <option value="">Select Start Time</option>
-                <option value="9:20 AM">9:20 AM</option>
-                <option value="10:50 AM">10:50 AM</option>
-                <option value="12:20 PM">12:20 PM</option>
-                <option value="1:50 PM">1:50 PM</option>
-                <option value="3:20 PM">3:20 PM</option>
-                <option value="4:50 PM">4:50 PM</option>
-            </select>
-        </div>
+        </select>
+        <select name="new_start_time">
+            <option value="">Select Start Time</option>
+            <option value="8:00 AM">8:00 AM</option>
+            <option value="9:30 AM">9:30 AM</option>
+            <option value="11:00 AM">11:00 AM</option>
+            <option value="12:30 PM">12:30 PM</option>
+            <option value="2:00 PM">2:00 PM</option>
+            <option value="3:30 PM">3:30 PM</option>
+        </select>
+        <select name="new_end_time">
+            <option value="">Select Start Time</option>
+            <option value="9:20 AM">9:20 AM</option>
+            <option value="10:50 AM">10:50 AM</option>
+            <option value="12:20 PM">12:20 PM</option>
+            <option value="1:50 PM">1:50 PM</option>
+            <option value="3:20 PM">3:20 PM</option>
+            <option value="4:50 PM">4:50 PM</option>
+        </select><br>
 
-        <div>
-            <input type="submit" value="Save Changes" style="background-color: #e0e0e0; padding: 10px; border: 2px solid black;">
-        </div>
+        <input type="submit" value="Save Changes">
     </form>
 
-    <div>
-        <h2>Additional Notes</h2>
-        <p>Enhance your profile by adding interests, links, or more consultation hours on the main page when needed!</p>
-        <a href="{{ url_for('faculty_dashboard') }}">Back to Profile</a>
-    </div>
-
-    <div>
-        <a href="{{ url_for('logout') }}">Logout</a>
-    </div>
+    <a href="{{ url_for('faculty_dashboard') }}">Back to Profile</a>
+    <a href="{{ url_for('logout') }}">Logout</a>
 
     <footer>
         <table>
