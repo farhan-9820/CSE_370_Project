@@ -1,10 +1,11 @@
+# app.py
 from flask import Flask, request, render_template, session, redirect, url_for
 import mysql.connector
 import bcrypt
 import os
 
 app = Flask(__name__)
-app.secret_key = os.urandom(24)  # Secure random key for sessions
+app.secret_key = os.urandom(24)
 
 # Database connection
 def get_db_connection():
@@ -31,7 +32,7 @@ def signup_page():
 # ---------------- LOGIN ----------------
 @app.route("/login", methods=["POST"])
 def login():
-    role = request.form.get("role")  
+    role = request.form.get("role")
     user_id = request.form.get("id")
     password = request.form.get("password")
 
