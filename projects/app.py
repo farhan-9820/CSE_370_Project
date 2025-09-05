@@ -540,6 +540,10 @@ def group_profile(group_id):
             """, (group_id,))
             requests = cursor.fetchall()
 
+        # Fetch group interests
+        cursor.execute("SELECT interest FROM GroupInterests WHERE group_id = %s", (group_id,))
+        interests = [row['interest'] for row in cursor.fetchall()]
+
     finally:
         cursor.close()
         conn.close()
@@ -553,7 +557,8 @@ def group_profile(group_id):
         requests=requests,
         supervisor_name=supervisor_name,
         cosup1_name=cosup1_name,
-        cosup2_name=cosup2_name
+        cosup2_name=cosup2_name,
+        interests=interests
     )
 
 # ---------------- FACULTY DASHBOARD / PROFILE ----------------
@@ -762,6 +767,57 @@ def edit_password(user_role, user_id):
 def logout():
     session.clear()
     return redirect(url_for('index'))
+
+# ---------------- EDIT GROUP PROFILE ----------------
+@app.route("/edit_group_profile/<int:group_id>", methods=["GET", "POST"])
+def edit_group_profile(group_id):
+    if 'role' not in session or session['role'] != 'student':
+        return redirect(url_for('login_page'))
+
+    user_id = session['user_id']
+    conn = get_db_connection()
+    cursor = conn.cursor(dictionary=True)
+    try:
+        # Check if user is in this group
+        cursor.execute("SELECT group_id FROM Student WHERE id = %s", (user_id,))
+        current_group = cursor.fetchone()['group_id']
+        if current_group != group_id:
+            return "<h1>You are not a member of this group</h1>"
+
+        cursor.execute("SELECT id, name, topic FROM `Group` WHERE id = %s", (group_id,))
+        group = cursor.fetchone()
+        cursor.execute("SELECT interest FROM GroupInterests WHERE group_id = %s", (group_id,))
+        interests = [row['interest'] for row in cursor.fetchall()]
+
+        if request.method == "POST":
+            topic = request.form.get("topic")
+            cursor.execute("UPDATE `Group` SET topic = %s WHERE id = %s", (topic, group_id))
+
+            # Delete interests
+            delete_interests = request.form.getlist("delete_interests")
+            for interest in delete_interests:
+                cursor.execute("DELETE FROM GroupInterests WHERE group_id = %s AND interest = %s", (group_id, interest))
+
+            # Update interests
+            update_interests = request.form.getlist("update_interests")
+            original_interests = request.form.getlist("original_interests")
+            for orig, new in zip(original_interests, update_interests):
+                if orig != new:
+                    cursor.execute("UPDATE GroupInterests SET interest = %s WHERE group_id = %s AND interest = %s", (new, group_id, orig))
+
+            # Add new interest
+            new_interest = request.form.get("new_interest")
+            if new_interest:
+                cursor.execute("INSERT INTO GroupInterests (group_id, interest) VALUES (%s, %s)", (group_id, new_interest))
+
+            conn.commit()
+            return redirect(url_for('group_profile', group_id=group_id))
+
+    finally:
+        cursor.close()
+        conn.close()
+
+    return render_template("edit_group_profile.html", group=group, interests=interests, group_id=group_id)
 
 if __name__ == "__main__":
     app.run(debug=True)
