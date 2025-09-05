@@ -497,11 +497,28 @@ def group_profile(group_id):
     cursor = conn.cursor(dictionary=True)
 
     try:
-        # Fetch group name
-        cursor.execute("SELECT name FROM `Group` WHERE id = %s", (group_id,))
+        # Fetch group info including topic and supervisor/cosupervisor IDs
+        cursor.execute("SELECT id, name, topic, sup_id, cosup1_id, cosup2_id FROM `Group` WHERE id = %s", (group_id,))
         group = cursor.fetchone()
         if not group:
             return "<h1>Group not found</h1>"
+
+        # Fetch supervisor and cosupervisor names
+        supervisor_name = None
+        cosup1_name = None
+        cosup2_name = None
+        if group['sup_id']:
+            cursor.execute("SELECT name FROM Faculty WHERE id = %s", (group['sup_id'],))
+            row = cursor.fetchone()
+            supervisor_name = row['name'] if row else None
+        if group['cosup1_id']:
+            cursor.execute("SELECT name FROM Faculty WHERE id = %s", (group['cosup1_id'],))
+            row = cursor.fetchone()
+            cosup1_name = row['name'] if row else None
+        if group['cosup2_id']:
+            cursor.execute("SELECT name FROM Faculty WHERE id = %s", (group['cosup2_id'],))
+            row = cursor.fetchone()
+            cosup2_name = row['name'] if row else None
 
         # Fetch members
         cursor.execute("SELECT id, name, mail FROM Student WHERE group_id = %s", (group_id,))
@@ -527,7 +544,17 @@ def group_profile(group_id):
         cursor.close()
         conn.close()
 
-    return render_template("group_profile.html", group=group, members=members, group_id=group_id, is_member=is_member, requests=requests)
+    return render_template(
+        "group_profile.html",
+        group=group,
+        members=members,
+        group_id=group_id,
+        is_member=is_member,
+        requests=requests,
+        supervisor_name=supervisor_name,
+        cosup1_name=cosup1_name,
+        cosup2_name=cosup2_name
+    )
 
 # ---------------- FACULTY DASHBOARD / PROFILE ----------------
 @app.route("/faculty_dashboard", methods=["GET", "POST"])
@@ -598,6 +625,12 @@ def edit_faculty_profile():
         cursor.execute("SELECT id, name, mail FROM Faculty WHERE id = %s", (user_id,))
         profile = cursor.fetchone()
 
+        cursor.execute("SELECT interest FROM FacultyInterests WHERE fac_id = %s", (user_id,))
+        interests = [row['interest'] for row in cursor.fetchall()]
+
+        cursor.execute("SELECT link FROM FacultyLinks WHERE fac_id = %s", (user_id,))
+        links = [row['link'] for row in cursor.fetchall()]
+
         cursor.execute("SELECT con_hour FROM FacultyConsultationHrs WHERE fac_id = %s", (user_id,))
         consultation_hours = [row['con_hour'] for row in cursor.fetchall()]
 
@@ -609,16 +642,40 @@ def edit_faculty_profile():
             cursor.execute("UPDATE Faculty SET name = %s, mail = %s WHERE id = %s",
                           (name, email, user_id))
 
+            # Handle interests
+            delete_interests = request.form.getlist("delete_interests")
+            for interest in delete_interests:
+                cursor.execute("DELETE FROM FacultyInterests WHERE fac_id = %s AND interest = %s", (user_id, interest))
+
+            update_interests = request.form.getlist("update_interests")
+            original_interests = request.form.getlist("original_interests")
+            for orig, new in zip(original_interests, update_interests):
+                if orig != new:
+                    cursor.execute("UPDATE FacultyInterests SET interest = %s WHERE fac_id = %s AND interest = %s", (new, user_id, orig))
+
+            new_interest = request.form.get("new_interest")
+            if new_interest:
+                cursor.execute("INSERT INTO FacultyInterests (fac_id, interest) VALUES (%s, %s)", (user_id, new_interest))
+
+            # Handle links
+            delete_links = request.form.getlist("delete_links")
+            for link in delete_links:
+                cursor.execute("DELETE FROM FacultyLinks WHERE fac_id = %s AND link = %s", (user_id, link))
+
+            update_links = request.form.getlist("update_links")
+            original_links = request.form.getlist("original_links")
+            for orig, new in zip(original_links, update_links):
+                if orig != new:
+                    cursor.execute("UPDATE FacultyLinks SET link = %s WHERE fac_id = %s AND link = %s", (new, user_id, orig))
+
+            new_link = request.form.get("new_link")
+            if new_link:
+                cursor.execute("INSERT INTO FacultyLinks (fac_id, link) VALUES (%s, %s)", (user_id, new_link))
+
             # Handle consultation hours
             delete_con_hours = request.form.getlist("delete_con_hours")
             for hour in delete_con_hours:
                 cursor.execute("DELETE FROM FacultyConsultationHrs WHERE fac_id = %s AND con_hour = %s", (user_id, hour))
-
-            update_con_hours = request.form.getlist("update_con_hours")
-            original_con_hours = request.form.getlist("original_con_hours")
-            for orig, new in zip(original_con_hours, update_con_hours):
-                if orig != new:
-                    cursor.execute("UPDATE FacultyConsultationHrs SET con_hour = %s WHERE fac_id = %s AND con_hour = %s", (new, user_id, orig))
 
             new_day = request.form.get("new_day")
             new_start_time = request.form.get("new_start_time")
@@ -634,7 +691,7 @@ def edit_faculty_profile():
         cursor.close()
         conn.close()
 
-    return render_template("edit_faculty_profile.html", profile=profile, consultation_hours=consultation_hours)
+    return render_template("edit_faculty_profile.html", profile=profile, interests=interests, links=links, consultation_hours=consultation_hours)
 
 # ---------------- ADMIN DASHBOARD ----------------
 @app.route("/admin_dashboard", methods=["GET", "POST"])
