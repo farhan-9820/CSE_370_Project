@@ -34,7 +34,7 @@
 
         <div>
             <h2>Add New Consultation Hour</h2>
-            <select name="new_day" required>
+            <select name="new_day">
                 <option value="">Select Day</option>
                 <option value="Sunday">Sunday</option>
                 <option value="Monday">Monday</option>
@@ -44,8 +44,24 @@
                 <option value="Friday">Friday</option>
                 <option value="Saturday">Saturday</option>
             </select>
-            <input type="text" name="new_start_time" placeholder="Start (e.g., 8:00 AM)" pattern="\d{1,2}:\d{2}\s?(AM|PM)" required style="border: 1px solid black; padding: 5px;">
-            <input type="text" name="new_end_time" placeholder="End (e.g., 9:20 AM)" pattern="\d{1,2}:\d{2}\s?(AM|PM)" required style="border: 1px solid black; padding: 5px;"><br>
+            <select name="new_start_time">
+                <option value="">Select Start Time</option>
+                <option value="8:00 AM">8:00 AM</option>
+                <option value="9:30 AM">9:30 AM</option>
+                <option value="11:00 AM">11:00 AM</option>
+                <option value="12:30 PM">12:30 PM</option>
+                <option value="2:00 PM">2:00 PM</option>
+                <option value="3:30 PM">3:30 PM</option>
+            </select>
+            <select name="new_end_time">
+                <option value="">Select Start Time</option>
+                <option value="9:20 AM">9:20 AM</option>
+                <option value="10:50 AM">10:50 AM</option>
+                <option value="12:20 PM">12:20 PM</option>
+                <option value="1:50 PM">1:50 PM</option>
+                <option value="3:20 PM">3:20 PM</option>
+                <option value="4:50 PM">4:50 PM</option>
+            </select>
         </div>
 
         <div>
