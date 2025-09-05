@@ -1,0 +1,35 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Edit Group Profile</title>
+</head>
+<body>
+    <h1>Edit Profile for Group: {{ group.name }}</h1>
+
+    <form action="{{ url_for('edit_group_profile', group_id=group_id) }}" method="POST">
+        <label for="topic">Topic:</label>
+        <input type="text" id="topic" name="topic" value="{{ group.topic }}"><br>
+
+        <h2>Manage Interests</h2>
+        {% for interest in interests %}
+        <input type="checkbox" name="delete_interests" value="{{ interest }}"> Delete {{ interest }}<br>
+        <input type="hidden" name="original_interests" value="{{ interest }}">
+        <label>Update {{ interest }} to:</label>
+        <input type="text" name="update_interests" value="{{ interest }}"><br>
+        {% endfor %}
+        <label>Add New Interest:</label>
+        <input type="text" name="new_interest"><br>
+
+        <input type="submit" value="Save Changes">
+    </form>
+
+    <a href="{{ url_for('group_profile', group_id=group_id) }}">Back to Group Profile</a>
+    <a href="{{ url_for('logout') }}">Logout</a>
+
+    <footer>
+        <p>© 2025 BRACU Thesis Portal | Designed with Elegance</p>
+    </footer>
+</body>
+</html>

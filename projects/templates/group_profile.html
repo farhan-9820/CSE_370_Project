@@ -15,6 +15,13 @@
     <p><strong>Cosupervisor 1:</strong> {{ cosup1_name if cosup1_name else 'None' }}</p>
     <p><strong>Cosupervisor 2:</strong> {{ cosup2_name if cosup2_name else 'None' }}</p>
 
+    <h2>Interests</h2>
+    <ul>
+        {% for interest in interests %}
+        <li>{{ interest }}</li>
+        {% endfor %}
+    </ul>
+
     <h2>Members</h2>
     <ul>
         {% for member in members %}
@@ -56,10 +63,20 @@
     {% else %}
     <p>No pending requests.</p>
     {% endif %}
+
+    <div>
+        <a href="{{ url_for('student_dashboard') }}">Back to Profile</a>
+        <a href="{{ url_for('edit_group_profile', group_id=group_id) }}">Edit Group Profile</a>
+        <a href="{{ url_for('logout') }}">Logout</a>
+    </div>
     {% endif %}
 
-    <a href="{{ url_for('student_dashboard') }}">Back to Profile</a>
-    <a href="{{ url_for('logout') }}">Logout</a>
+    {% if not is_member %}
+    <div>
+        <a href="{{ url_for('student_dashboard') }}">Back to Profile</a>
+        <a href="{{ url_for('logout') }}">Logout</a>
+    </div>
+    {% endif %}
 
     <footer>
         <p>© 2025 BRACU Thesis Portal | Designed with Elegance</p>
