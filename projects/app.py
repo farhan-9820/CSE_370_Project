@@ -1,11 +1,10 @@
-# app.py
 from flask import Flask, request, render_template, session, redirect, url_for
 import mysql.connector
 import bcrypt
 import os
 
 app = Flask(__name__)
-app.secret_key = os.urandom(24)
+app.secret_key = os.urandom(24)  # Secure random key for sessions
 
 # Database connection
 def get_db_connection():
@@ -32,7 +31,7 @@ def signup_page():
 # ---------------- LOGIN ----------------
 @app.route("/login", methods=["POST"])
 def login():
-    role = request.form.get("role")
+    role = request.form.get("role")  
     user_id = request.form.get("id")
     password = request.form.get("password")
 
@@ -426,6 +425,32 @@ def reject_join_request(group_id, student_id):
         cursor.execute("DELETE FROM GroupJoinRequests WHERE group_id = %s AND student_id = %s", (group_id, student_id))
         conn.commit()
         return redirect(url_for('group_profile', group_id=group_id))
+
+    finally:
+        cursor.close()
+        conn.close()
+
+# ---------------- LEAVE GROUP ----------------
+@app.route("/leave_group/<int:group_id>", methods=["POST"])
+def leave_group(group_id):
+    if 'role' not in session or session['role'] != 'student':
+        return redirect(url_for('login_page'))
+
+    user_id = session['user_id']
+    conn = get_db_connection()
+    cursor = conn.cursor(dictionary=True)
+
+    try:
+        # Check if current user is in the group
+        cursor.execute("SELECT group_id FROM Student WHERE id = %s", (user_id,))
+        current_group = cursor.fetchone()['group_id']
+        if current_group != group_id:
+            return "<h1>You are not a member of this group</h1>"
+
+        # Remove user from group
+        cursor.execute("UPDATE Student SET group_id = NULL WHERE id = %s", (user_id,))
+        conn.commit()
+        return redirect(url_for('student_dashboard'))
 
     finally:
         cursor.close()
