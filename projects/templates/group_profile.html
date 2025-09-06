@@ -32,6 +32,12 @@
         {% endfor %}
     </ul>
 
+    {% set user_id = session['user_id']|int %}
+    {% if (session['role'] == 'student' and is_member) or
+          (session['role'] == 'faculty' and (group.sup_id == user_id or group.cosup1_id == user_id or group.cosup2_id == user_id)) %}
+        <a href="{{ url_for('group_inbox', group_id=group_id) }}">Inbox</a>
+    {% endif %}
+
     {% if session['role'] == 'student' and is_member %}
         <a href="{{ url_for('edit_group_profile', group_id=group_id) }}">Edit Group Profile</a>
         <a href="{{ url_for('group_requests', group_id=group_id) }}">View Sent Requests</a>

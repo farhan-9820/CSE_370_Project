@@ -1,0 +1,101 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Group Inbox</title>
+</head>
+<body>
+    <h1>Group Inbox</h1>
+
+    {% if role == 'faculty' %}
+    <h2>Add File</h2>
+    <form action="{{ url_for('group_inbox', group_id=group_id) }}" method="post" enctype="multipart/form-data">
+        <input type="text" name="subject" placeholder="Subject" required>
+        <input type="text" name="remarks" placeholder="Remarks">
+        <input type="file" name="file" required>
+        <button type="submit">Upload File</button>
+    </form>
+    {% endif %}
+
+    <h2>Faculty Files</h2>
+    <table border="1">
+        <tr>
+            <th>File ID</th>
+            <th>Sender</th>
+            <th>Subject</th>
+            <th>Remarks</th>
+            <th>Date</th>
+            <th>Download</th>
+            {% if role == 'student' %}
+            <th>Reply</th>
+            {% endif %}
+        </tr>
+        {% for file in faculty_files %}
+        <tr>
+            <td>{{ file.file_id }}</td>
+            <td>{{ file.sender_name }} (Faculty)</td>
+            <td>{{ file.subject }}</td>
+            <td>{{ file.remarks }}</td>
+            <td>{{ file.date }}</td>
+            <td>
+                <a href="{{ url_for('download_file', filename=file.file_link) }}">Download</a>
+            </td>
+            {% if role == 'student' %}
+            <td>
+                <form action="{{ url_for('group_inbox', group_id=group_id) }}" method="post" enctype="multipart/form-data">
+                    <input type="hidden" name="reply_file_id" value="{{ file.file_id }}">
+                    <input type="text" name="subject" placeholder="Subject" required>
+                    <input type="text" name="remarks" placeholder="Remarks">
+                    <input type="file" name="file" required>
+                    <button type="submit">Reply</button>
+                </form>
+            </td>
+            {% endif %}
+        </tr>
+        {% endfor %}
+        {% if not faculty_files %}
+        <tr><td colspan="7">No files.</td></tr>
+        {% endif %}
+    </table>
+
+    {% if role == 'student' %}
+    <h2>Add File (Reply to Faculty File)</h2>
+    <p>Use the "Reply" button beside a faculty file to upload your reply.</p>
+    {% endif %}
+
+    <h2>Student Replies</h2>
+    <table border="1">
+        <tr>
+            <th>File ID</th>
+            <th>Sender</th>
+            <th>Subject</th>
+            <th>Remarks</th>
+            <th>Date</th>
+            <th>Download</th>
+            <th>Reply To (Faculty File ID)</th>
+        </tr>
+        {% for file in student_files %}
+        <tr>
+            <td>{{ file.file_id }}</td>
+            <td>{{ file.sender_name }} (Student)</td>
+            <td>{{ file.subject }}</td>
+            <td>{{ file.remarks }}</td>
+            <td>{{ file.date }}</td>
+            <td>
+                <a href="{{ url_for('download_file', filename=file.file_link) }}">Download</a>
+            </td>
+            <td>{{ file.reply_file_id }}</td>
+        </tr>
+        {% endfor %}
+        {% if not student_files %}
+        <tr><td colspan="7">No replies.</td></tr>
+        {% endif %}
+    </table>
+
+    <a href="{{ url_for('group_profile', group_id=group_id) }}">Back to Group Profile</a>
+    <a href="{{ url_for('logout') }}">Logout</a>
+    <footer>
+        <p>© 2025 BRACU Thesis Portal | Designed with Elegance</p>
+    </footer>
+</body>
+</html>
