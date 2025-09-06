@@ -1,0 +1,42 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>My Groups</title>
+</head>
+<body>
+    <h1>My Groups</h1>
+    <table border="1">
+        <tr>
+            <th>Group ID</th>
+            <th>Name</th>
+            <th>Topic</th>
+            <th>Supervisor</th>
+            <th>Co-supervisor 1</th>
+            <th>Co-supervisor 2</th>
+            <th>Action</th>
+        </tr>
+        {% for group in groups %}
+        <tr>
+            <td>{{ group.id }}</td>
+            <td>{{ group.name }}</td>
+            <td>{{ group.topic if group.topic else 'None' }}</td>
+            <td>{{ group.sup_id if group.sup_id else 'None' }}</td>
+            <td>{{ group.cosup1_id if group.cosup1_id else 'None' }}</td>
+            <td>{{ group.cosup2_id if group.cosup2_id else 'None' }}</td>
+            <td>
+                <a href="{{ url_for('group_profile', group_id=group.id) }}">View Profile</a>
+            </td>
+        </tr>
+        {% endfor %}
+        {% if not groups %}
+        <tr><td colspan="7">No groups found.</td></tr>
+        {% endif %}
+    </table>
+    <a href="{{ url_for('faculty_dashboard') }}">Back to Profile</a>
+    <a href="{{ url_for('logout') }}">Logout</a>
+    <footer>
+        <p>© 2025 BRACU Thesis Portal | Designed with Elegance</p>
+    </footer>
+</body>
+</html>

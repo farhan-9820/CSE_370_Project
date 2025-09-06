@@ -1,0 +1,45 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Group Sent Requests</title>
+</head>
+<body>
+    <h1>Sent Requests</h1>
+    <table border="1">
+        <thead>
+            <tr>
+                <th>Faculty ID</th>
+                <th>Name</th>
+                <th>Email</th>
+                <th>Type</th>
+                <th>Action</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for req in requests %}
+            <tr>
+                <td>{{ req.faculty_id }}</td>
+                <td>{{ req.name }}</td>
+                <td>{{ req.mail }}</td>
+                <td>{{ req.type }}</td>
+                <td>
+                    <form action="{{ url_for('cancel_request', group_id=group_id, faculty_id=req.faculty_id, req_type=req.type) }}" method="post">
+                        <button type="submit">Cancel</button>
+                    </form>
+                </td>
+            </tr>
+            {% endfor %}
+            {% if not requests %}
+            <tr><td colspan="5">No requests sent.</td></tr>
+            {% endif %}
+        </tbody>
+    </table>
+    <a href="{{ url_for('group_profile', group_id=group_id) }}">Back to Group Profile</a>
+    <a href="{{ url_for('logout') }}">Logout</a>
+    <footer>
+        <p>© 2025 BRACU Thesis Portal | Designed with Elegance</p>
+    </footer>
+</body>
+</html>

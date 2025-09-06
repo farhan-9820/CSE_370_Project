@@ -45,12 +45,24 @@
     <div>
         <a href="{{ url_for('edit_faculty_profile') }}">Edit Profile</a>
         <a href="{{ url_for('search_students') }}">Search Student Profiles</a>
+        <a href="{{ url_for('faculty_supervision_requests') }}">Supervision Requests</a>
+        <a href="{{ url_for('faculty_cosupervision_requests') }}">Co-supervision Requests</a>
+        <a href="{{ url_for('faculty_my_groups') }}">My Groups</a>
     </div>
     {% endif %}
 
     <div>
         <a href="{{ url_for('logout') }}">Logout</a>
     </div>
+
+    {% if session['role'] == 'student' %}
+    <form action="{{ url_for('request_supervisor', faculty_id=profile.id) }}" method="post" style="display:inline;">
+        <button type="submit">Request to Supervise</button>
+    </form>
+    <form action="{{ url_for('request_cosupervisor', faculty_id=profile.id) }}" method="post" style="display:inline;">
+        <button type="submit">Request to Co-supervise</button>
+    </form>
+    {% endif %}
 
     <footer>
         <h3>© 2025 BRACU Thesis Portal | Designed with Elegance</h3>

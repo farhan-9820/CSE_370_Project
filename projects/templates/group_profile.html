@@ -29,54 +29,49 @@
         {% endfor %}
     </ul>
 
-    {% if is_member %}
-    <h2>Group Actions</h2>
-    <form action="{{ url_for('leave_group', group_id=group_id) }}" method="post" style="margin-bottom: 20px;">
-        <button type="submit" style="background-color: #dc3545; color: white; padding: 8px 16px; border: none; border-radius: 4px; cursor: pointer;">Leave Group</button>
-    </form>
-
-    <h2>Pending Join Requests</h2>
-    {% if requests %}
-    <table>
-        <tr>
-            <th>ID</th>
-            <th>Name</th>
-            <th>Email</th>
-            <th>Action</th>
-        </tr>
-        {% for req in requests %}
-        <tr>
-            <td>{{ req.id }}</td>
-            <td>{{ req.name }}</td>
-            <td>{{ req.mail }}</td>
-            <td>
-                <form action="{{ url_for('accept_join_request', group_id=group_id, student_id=req.id) }}" method="post" style="display:inline;">
-                    <button type="submit">Accept</button>
-                </form>
-                <form action="{{ url_for('reject_join_request', group_id=group_id, student_id=req.id) }}" method="post" style="display:inline;">
-                    <button type="submit">Reject</button>
-                </form>
-            </td>
-        </tr>
-        {% endfor %}
-    </table>
-    {% else %}
-    <p>No pending requests.</p>
-    {% endif %}
-
-    <div>
-        <a href="{{ url_for('student_dashboard') }}">Back to Profile</a>
+    {% if session['role'] == 'student' and is_member %}
         <a href="{{ url_for('edit_group_profile', group_id=group_id) }}">Edit Group Profile</a>
-        <a href="{{ url_for('logout') }}">Logout</a>
-    </div>
+        <a href="{{ url_for('group_requests', group_id=group_id) }}">View Sent Requests</a>
+
+        <h2>Group Actions</h2>
+        <form action="{{ url_for('leave_group', group_id=group_id) }}" method="post" style="margin-bottom: 20px;">
+            <button type="submit" style="background-color: #dc3545; color: white; padding: 8px 16px; border: none; border-radius: 4px; cursor: pointer;">Leave Group</button>
+        </form>
+
+        <h2>Pending Join Requests</h2>
+        {% if requests %}
+        <table>
+            <tr>
+                <th>ID</th>
+                <th>Name</th>
+                <th>Email</th>
+                <th>Action</th>
+            </tr>
+            {% for req in requests %}
+            <tr>
+                <td>{{ req.id }}</td>
+                <td>{{ req.name }}</td>
+                <td>{{ req.mail }}</td>
+                <td>
+                    <form action="{{ url_for('accept_join_request', group_id=group_id, student_id=req.id) }}" method="post" style="display:inline;">
+                        <button type="submit">Accept</button>
+                    </form>
+                    <form action="{{ url_for('reject_join_request', group_id=group_id, student_id=req.id) }}" method="post" style="display:inline;">
+                        <button type="submit">Reject</button>
+                    </form>
+                </td>
+            </tr>
+            {% endfor %}
+        </table>
+        {% else %}
+        <p>No pending requests.</p>
+        {% endif %}
     {% endif %}
 
-    {% if not is_member %}
     <div>
         <a href="{{ url_for('student_dashboard') }}">Back to Profile</a>
         <a href="{{ url_for('logout') }}">Logout</a>
     </div>
-    {% endif %}
 
     <footer>
         <p>© 2025 BRACU Thesis Portal | Designed with Elegance</p>

@@ -1,0 +1,41 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Co-supervision Requests</title>
+</head>
+<body>
+    <h1>Co-supervision Requests</h1>
+    <table border="1">
+        <tr>
+            <th>Group ID</th>
+            <th>Group Name</th>
+            <th>Topic</th>
+            <th>Action</th>
+        </tr>
+        {% for req in requests %}
+        <tr>
+            <td>{{ req.group_id }}</td>
+            <td>{{ req.name }}</td>
+            <td>{{ req.topic if req.topic else 'None' }}</td>
+            <td>
+                <form action="{{ url_for('handle_cosupervision_request', group_id=req.group_id, action='accept') }}" method="post" style="display:inline;">
+                    <button type="submit">Accept</button>
+                </form>
+                <form action="{{ url_for('handle_cosupervision_request', group_id=req.group_id, action='reject') }}" method="post" style="display:inline;">
+                    <button type="submit">Reject</button>
+                </form>
+            </td>
+        </tr>
+        {% endfor %}
+        {% if not requests %}
+        <tr><td colspan="4">No requests.</td></tr>
+        {% endif %}
+    </table>
+    <a href="{{ url_for('faculty_dashboard') }}">Back to Profile</a>
+    <a href="{{ url_for('logout') }}">Logout</a>
+    <footer>
+        <p>© 2025 BRACU Thesis Portal | Designed with Elegance</p>
+    </footer>
+</body>
+</html>
