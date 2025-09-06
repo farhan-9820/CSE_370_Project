@@ -1,14 +1,20 @@
-<!-- search_groups.html -->
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Search Groups</title>
+</head>
+<body>
 <h1>Search Groups</h1>
 
 <form method="post">
     <label for="search_term">Search by ID or Name:</label>
-    <input type="text" id="search_term" name="search_term">
+    <input type="text" id="search_term" name="search_term" value="{{ search_term }}">
     <button type="submit">Search</button>
 </form>
 
 {% if groups %}
-<table>
+<table border="1">
     <tr>
         <th>ID</th>
         <th>Name</th>
@@ -21,10 +27,14 @@
         <td>{{ group.name }}</td>
         <td>{{ group.member_count }}/5</td>
         <td>
-            {% if group.member_count < 5 %}
-            <a href="{{ url_for('request_join_group', group_id=group.id) }}">Request to Join</a>
+            {% if session['role'] == 'student' %}
+                {% if group.member_count < 5 %}
+                <a href="{{ url_for('request_join_group', group_id=group.id) }}">Request to Join</a>
+                {% endif %}
+                <a href="{{ url_for('group_profile', group_id=group.id) }}">View Profile</a>
+            {% elif session['role'] == 'faculty' %}
+                <a href="{{ url_for('group_profile', group_id=group.id) }}">View Profile</a>
             {% endif %}
-            <a href="{{ url_for('group_profile', group_id=group.id) }}">View Profile</a>
         </td>
     </tr>
     {% endfor %}
@@ -33,9 +43,14 @@
 <p>No groups found.</p>
 {% endif %}
 
+{% if session['role'] == 'student' %}
 <a href="{{ url_for('student_dashboard') }}">Back to Profile</a>
+{% elif session['role'] == 'faculty' %}
+<a href="{{ url_for('faculty_dashboard') }}">Back to Profile</a>
+{% endif %}
 <a href="{{ url_for('logout') }}">Logout</a>
 
 <footer>
     © 2025 BRACU Thesis Portal | Designed with Elegance
 </footer>
+</body>

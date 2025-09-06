@@ -25,7 +25,10 @@
     <h2>Members</h2>
     <ul>
         {% for member in members %}
-        <li>{{ member.name }} (ID: {{ member.id }}, Email: {{ member.mail }})</li>
+        <li>
+            {{ member.name }} (ID: {{ member.id }}, Email: {{ member.mail }})
+            <a href="{{ url_for('view_student_profile', student_id=member.id) }}">View Profile</a>
+        </li>
         {% endfor %}
     </ul>
 
