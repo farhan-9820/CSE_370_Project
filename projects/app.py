@@ -243,7 +243,7 @@ def view_student_profile(student_id):
 
     try:
         # Fetch profile data
-        cursor.execute("SELECT id, name, mail, curr_sem FROM Student WHERE id = %s", (student_id,))
+        cursor.execute("SELECT id, name, mail, curr_sem, group_id FROM Student WHERE id = %s", (student_id,))
         profile = cursor.fetchone()
 
         if not profile:
@@ -1146,4 +1146,5 @@ def faculty_my_groups():
     return render_template("faculty_my_groups.html", groups=groups)
 
 if __name__ == "__main__":
+
     app.run(debug=True)
