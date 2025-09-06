@@ -1,11 +1,16 @@
-from flask import Flask, request, render_template, session, redirect, url_for
+from flask import Flask, request, render_template, session, redirect, url_for, flash, send_from_directory
 import mysql.connector
 import bcrypt
 import os
-from flask import flash
+from werkzeug.utils import secure_filename
+from datetime import datetime
 
 app = Flask(__name__)
 app.secret_key = os.urandom(24)  # Secure random key for sessions
+
+UPLOAD_FOLDER = os.path.join(os.path.dirname(__file__), 'uploads')
+os.makedirs(UPLOAD_FOLDER, exist_ok=True)
+app.config['UPLOAD_FOLDER'] = UPLOAD_FOLDER
 
 # Database connection
 def get_db_connection():
@@ -1144,6 +1149,113 @@ def faculty_my_groups():
         cursor.close()
         conn.close()
     return render_template("faculty_my_groups.html", groups=groups)
+
+# ---------------- INBOX ----------------
+# Helper: Check if user is in group or is supervisor/cosup of group
+def is_group_member(user_id, group_id):
+    conn = get_db_connection()
+    cursor = conn.cursor(dictionary=True)
+    cursor.execute("SELECT id FROM Student WHERE id = %s AND group_id = %s", (user_id, group_id))
+    result = cursor.fetchone()
+    cursor.close()
+    return result is not None
+
+def is_group_supervisor_or_cosup(user_id, group_id):
+    conn = get_db_connection()
+    cursor = conn.cursor(dictionary=True)
+    cursor.execute("SELECT sup_id, cosup1_id, cosup2_id FROM `Group` WHERE id = %s", (group_id,))
+    row = cursor.fetchone()
+    cursor.close()
+    return row and (row['sup_id'] == int(user_id) or row['cosup1_id'] == int(user_id) or row['cosup2_id'] == int(user_id))
+
+@app.route("/group_inbox/<int:group_id>", methods=["GET", "POST"])
+def group_inbox(group_id):
+    if 'role' not in session:
+        return redirect(url_for('login_page'))
+    user_id = int(session['user_id'])
+    role = session['role']
+
+    # Permission check
+    can_access = False
+    if role == 'student' and is_group_member(user_id, group_id):
+        can_access = True
+    elif role == 'faculty' and is_group_supervisor_or_cosup(user_id, group_id):
+        can_access = True
+    if not can_access:
+        return "<h1>You do not have access to this inbox.</h1>"
+
+    conn = get_db_connection()
+    cursor = conn.cursor(dictionary=True)
+
+    # Handle file upload
+    if request.method == "POST":
+        file = request.files.get("file")
+        subject = request.form.get("subject")
+        remarks = request.form.get("remarks")
+        reply_file_id = request.form.get("reply_file_id")
+        now = datetime.now()
+        if file and file.filename:
+            filename = secure_filename(f"{now.strftime('%Y%m%d%H%M%S')}_{file.filename}")
+            file.save(os.path.join(app.config['UPLOAD_FOLDER'], filename))
+            if role == "faculty":
+                cursor.execute(
+                    "INSERT INTO FacultyFile (fac_id, subject, remarks, file_link, date) VALUES (%s, %s, %s, %s, %s)",
+                    (user_id, subject, remarks, filename, now)
+                )
+                file_id = cursor.lastrowid
+                cursor.execute(
+                    "INSERT INTO GroupFile (group_id, reply_file_id, subject, remarks, file_link, date) VALUES (%s, NULL, %s, %s, %s, %s)",
+                    (group_id, subject, remarks, filename, now)
+                )
+            elif role == "student":
+                # Only allow reply to a faculty file
+                if reply_file_id:
+                    cursor.execute(
+                        "INSERT INTO GroupFile (group_id, reply_file_id, subject, remarks, file_link, date) VALUES (%s, %s, %s, %s, %s, %s)",
+                        (group_id, reply_file_id, subject, remarks, filename, now)
+                    )
+            conn.commit()
+            return redirect(url_for('group_inbox', group_id=group_id))
+
+    # Fetch all files for this group
+    # Faculty files sent to this group
+    cursor.execute("""
+        SELECT f.id as file_id, f.fac_id, fac.name as sender_name, 'faculty' as sender_role, f.subject, f.remarks, f.file_link, f.date
+        FROM FacultyFile f
+        JOIN Faculty fac ON f.fac_id = fac.id
+        JOIN GroupFile gf ON gf.file_link = f.file_link AND gf.group_id = %s
+        WHERE gf.reply_file_id IS NULL
+        ORDER BY f.date DESC
+    """, (group_id,))
+    faculty_files = cursor.fetchall()
+
+    # Student replies (sender is group name)
+    cursor.execute("""
+        SELECT gf.id as file_id, g.name as sender_name, 'group' as sender_role, gf.subject, gf.remarks, gf.file_link, gf.date, gf.reply_file_id
+        FROM GroupFile gf
+        JOIN `Group` g ON gf.group_id = g.id
+        WHERE gf.group_id = %s AND gf.reply_file_id IS NOT NULL
+        ORDER BY gf.date DESC
+    """, (group_id,))
+    student_files = cursor.fetchall()
+
+    cursor.close()
+    conn.close()
+
+    return render_template(
+        "group_inbox.html",
+        group_id=group_id,
+        faculty_files=faculty_files,
+        student_files=student_files,
+        role=role
+    )
+
+# Download file
+@app.route('/download/<filename>')
+def download_file(filename):
+    if 'role' not in session:
+        return redirect(url_for('login_page'))
+    return send_from_directory(app.config['UPLOAD_FOLDER'], filename, as_attachment=True)
 
 if __name__ == "__main__":
     app.run(debug=True)
