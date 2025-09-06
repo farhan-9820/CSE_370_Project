@@ -179,3 +179,12 @@ ALTER TABLE `Group` ADD COLUMN name VARCHAR(255) NOT NULL;
 
 -- Make Group id auto-increment
 ALTER TABLE `Group` MODIFY COLUMN id INT AUTO_INCREMENT;
+
+
+-- For FacultyFile table
+ALTER TABLE FacultyFile 
+MODIFY COLUMN id INT AUTO_INCREMENT;
+
+-- For GroupFile table
+ALTER TABLE GroupFile 
+MODIFY COLUMN id INT AUTO_INCREMENT;
