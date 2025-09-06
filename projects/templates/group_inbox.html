@@ -17,6 +17,16 @@
     </form>
     {% endif %}
 
+    {% if role == 'student' %}
+    <h2>Add File</h2>
+    <form action="{{ url_for('group_inbox', group_id=group_id) }}" method="post" enctype="multipart/form-data">
+        <input type="text" name="subject" placeholder="Subject" required>
+        <input type="text" name="remarks" placeholder="Remarks">
+        <input type="file" name="file" required>
+        <button type="submit">Upload File</button>
+    </form>
+    {% endif %}
+
     <h2>Faculty Files</h2>
     <table border="1">
         <tr>
@@ -84,7 +94,7 @@
             <td>
                 <a href="{{ url_for('download_file', filename=file.file_link) }}">Download</a>
             </td>
-            <td>{{ file.reply_file_id }}</td>
+            <td>{{ file.reply_file_id if file.reply_file_id else 'None' }}</td>
         </tr>
         {% endfor %}
         {% if not student_files %}
