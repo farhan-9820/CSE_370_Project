@@ -287,6 +287,36 @@ def search_students():
 
     return render_template("search_students.html", students=students, search_term=search_term)
 
+# ---------------- SEARCH FACULTIES ----------------
+@app.route("/search_faculties", methods=["GET", "POST"])
+def search_faculties():
+    if 'role' not in session or session['role'] not in ['student', 'faculty']:
+        return redirect(url_for('login_page'))
+
+    search_term = request.form.get("search_term", "") if request.method == "POST" else ""
+    faculties = []
+
+    conn = get_db_connection()
+    cursor = conn.cursor(dictionary=True)
+
+    try:
+        if search_term:
+            cursor.execute("SELECT id, name, mail FROM Faculty WHERE id LIKE %s OR name LIKE %s", (f"%{search_term}%", f"%{search_term}%"))
+        else:
+            cursor.execute("SELECT id, name, mail FROM Faculty")
+        faculties = cursor.fetchall()
+
+        # Fetch interests for each faculty
+        for faculty in faculties:
+            cursor.execute("SELECT interest FROM FacultyInterests WHERE fac_id = %s", (faculty['id'],))
+            faculty['interests'] = [row['interest'] for row in cursor.fetchall()]
+
+    finally:
+        cursor.close()
+        conn.close()
+
+    return render_template("search_faculties.html", faculties=faculties, search_term=search_term)
+
 # ---------------- CREATE GROUP ----------------
 @app.route("/create_group", methods=["GET", "POST"])
 def create_group():
@@ -818,6 +848,36 @@ def edit_group_profile(group_id):
         conn.close()
 
     return render_template("edit_group_profile.html", group=group, interests=interests, group_id=group_id)
+
+# ---------------- VIEW FACULTY PROFILE ----------------
+@app.route("/view_faculty_profile/<faculty_id>", methods=["GET"])
+def view_faculty_profile(faculty_id):
+    if 'role' not in session or session['role'] not in ['student', 'faculty']:
+        return redirect(url_for('login_page'))
+
+    conn = get_db_connection()
+    cursor = conn.cursor(dictionary=True)
+
+    try:
+        cursor.execute("SELECT id, name, mail FROM Faculty WHERE id = %s", (faculty_id,))
+        profile = cursor.fetchone()
+        if not profile:
+            return "<h1>Faculty not found</h1>"
+
+        cursor.execute("SELECT interest FROM FacultyInterests WHERE fac_id = %s", (faculty_id,))
+        interests = [row['interest'] for row in cursor.fetchall()]
+
+        cursor.execute("SELECT link FROM FacultyLinks WHERE fac_id = %s", (faculty_id,))
+        links = [row['link'] for row in cursor.fetchall()]
+
+        cursor.execute("SELECT con_hour FROM FacultyConsultationHrs WHERE fac_id = %s", (faculty_id,))
+        consultation_hours = [row['con_hour'] for row in cursor.fetchall()]
+
+    finally:
+        cursor.close()
+        conn.close()
+
+    return render_template("faculty_profile.html", profile=profile, interests=interests, links=links, consultation_hours=consultation_hours, is_own=False)
 
 if __name__ == "__main__":
     app.run(debug=True)
