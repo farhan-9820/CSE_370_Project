@@ -25,26 +25,9 @@ This project is a comprehensive Thesis Management and Information Website design
 
 ### Thesis File Submission
 - Students upload thesis files (PDF, LaTeX, etc.) for supervisor review.
-- Supervisors are notified and can respond via email or dashboard.
-- File submissions are versioned for tracking.
-
-### Group Consultation Scheduling
-- Groups schedule consultations with supervisors (20–60 min sessions).
-- Bookings update all group members’ schedules and notify supervisors.
 
 ### Supervisor Feedback System
 - Supervisors provide feedback via dashboard comments or email.
-- Students receive notifications and can respond in a threaded, Discord-like format.
-
-### Thesis Search Wrapper
-- Search recent theses from the university repository using filters (title, author, year).
-- View metadata and original records.
-- Register for P3 thesis inside the website.
-
-### AI-Powered Workflow Assistant
-- Summarizes thesis abstracts using free APIs (e.g., Hugging Face Transformers).
-- Suggests supervisor slot allocations for balanced workloads.
-- Generates draft feedback for supervisors.
 
 ---
 
