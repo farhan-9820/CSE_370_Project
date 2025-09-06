@@ -490,7 +490,7 @@ def leave_group(group_id):
 # ---------------- SEARCH GROUPS ----------------
 @app.route("/search_groups", methods=["GET", "POST"])
 def search_groups():
-    if 'role' not in session or session['role'] != 'student':
+    if 'role' not in session or session['role'] not in ['student', 'faculty']:
         return redirect(url_for('login_page'))
 
     search_term = request.form.get("search_term", "") if request.method == "POST" else ""
@@ -1146,5 +1146,4 @@ def faculty_my_groups():
     return render_template("faculty_my_groups.html", groups=groups)
 
 if __name__ == "__main__":
-
     app.run(debug=True)
