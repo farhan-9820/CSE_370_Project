@@ -2,6 +2,7 @@ from flask import Flask, request, render_template, session, redirect, url_for
 import mysql.connector
 import bcrypt
 import os
+from flask import flash
 
 app = Flask(__name__)
 app.secret_key = os.urandom(24)  # Secure random key for sessions
@@ -519,9 +520,8 @@ def search_groups():
 # ---------------- GROUP PROFILE ----------------
 @app.route("/group_profile/<int:group_id>", methods=["GET"])
 def group_profile(group_id):
-    if 'role' not in session or session['role'] != 'student':
+    if 'role' not in session or session['role'] not in ['student', 'faculty']:
         return redirect(url_for('login_page'))
-
     user_id = session['user_id']
     conn = get_db_connection()
     cursor = conn.cursor(dictionary=True)
@@ -878,6 +878,272 @@ def view_faculty_profile(faculty_id):
         conn.close()
 
     return render_template("faculty_profile.html", profile=profile, interests=interests, links=links, consultation_hours=consultation_hours, is_own=False)
+
+@app.route("/request_supervisor/<faculty_id>", methods=["POST"])
+def request_supervisor(faculty_id):
+    if 'role' not in session or session['role'] != 'student':
+        return redirect(url_for('login_page'))
+    user_id = session['user_id']
+    conn = get_db_connection()
+    cursor = conn.cursor(dictionary=True)
+    try:
+        # Check group
+        cursor.execute("SELECT group_id FROM Student WHERE id = %s", (user_id,))
+        row = cursor.fetchone()
+        if not row or not row['group_id']:
+            return "<h1>You need to join/create a group first.</h1>"
+        group_id = row['group_id']
+
+        # Check if already has supervisor
+        cursor.execute("SELECT sup_id FROM `Group` WHERE id = %s", (group_id,))
+        sup = cursor.fetchone()['sup_id']
+        if sup:
+            return "<h1>You already have a supervisor.</h1>"
+
+        # Check request limit
+        cursor.execute("SELECT COUNT(*) as cnt FROM ReqSupervisor WHERE group_id = %s", (group_id,))
+        count = cursor.fetchone()['cnt']
+        if count >= 4:
+            return "<h1>Request limit reached.</h1>"
+
+        # Check if already requested this faculty
+        cursor.execute("SELECT * FROM ReqSupervisor WHERE group_id = %s AND sup_id = %s", (group_id, faculty_id))
+        if cursor.fetchone():
+            return "<h1>Request already sent to this faculty.</h1>"
+
+        # Insert request
+        cursor.execute("INSERT INTO ReqSupervisor (group_id, sup_id) VALUES (%s, %s)", (group_id, faculty_id))
+        conn.commit()
+        return redirect(url_for('group_requests', group_id=group_id))
+    finally:
+        cursor.close()
+        conn.close()
+
+@app.route("/request_cosupervisor/<faculty_id>", methods=["POST"])
+def request_cosupervisor(faculty_id):
+    if 'role' not in session or session['role'] != 'student':
+        return redirect(url_for('login_page'))
+    user_id = session['user_id']
+    conn = get_db_connection()
+    cursor = conn.cursor(dictionary=True)
+    try:
+        # Check group
+        cursor.execute("SELECT group_id FROM Student WHERE id = %s", (user_id,))
+        row = cursor.fetchone()
+        if not row or not row['group_id']:
+            return "<h1>You need to join/create a group first.</h1>"
+        group_id = row['group_id']
+
+        # Check if already has 2 co-supervisors
+        cursor.execute("SELECT cosup1_id, cosup2_id FROM `Group` WHERE id = %s", (group_id,))
+        row = cursor.fetchone()
+        cosups = [row['cosup1_id'], row['cosup2_id']]
+        if sum(1 for x in cosups if x) >= 2:
+            return "<h1>You already have two co-supervisors.</h1>"
+
+        # Check request limit
+        cursor.execute("SELECT COUNT(*) as cnt FROM ReqCosupervisor WHERE group_id = %s", (group_id,))
+        count = cursor.fetchone()['cnt']
+        if count >= 6:
+            return "<h1>Request limit reached.</h1>"
+
+        # Check if already requested this faculty
+        cursor.execute("SELECT * FROM ReqCosupervisor WHERE group_id = %s AND cosup_id = %s", (group_id, faculty_id))
+        if cursor.fetchone():
+            return "<h1>Request already sent to this faculty.</h1>"
+
+        # Insert request
+        cursor.execute("INSERT INTO ReqCosupervisor (group_id, cosup_id) VALUES (%s, %s)", (group_id, faculty_id))
+        conn.commit()
+        return redirect(url_for('group_requests', group_id=group_id))
+    finally:
+        cursor.close()
+        conn.close()
+
+@app.route("/group_requests/<int:group_id>")
+def group_requests(group_id):
+    if 'role' not in session or session['role'] != 'student':
+        return redirect(url_for('login_page'))
+    user_id = session['user_id']
+    conn = get_db_connection()
+    cursor = conn.cursor(dictionary=True)
+    try:
+        # Check if user is in this group
+        cursor.execute("SELECT group_id FROM Student WHERE id = %s", (user_id,))
+        current_group = cursor.fetchone()['group_id']
+        if current_group != group_id:
+            return "<h1>You are not a member of this group</h1>"
+
+        # Supervisor requests
+        cursor.execute("""
+            SELECT r.sup_id as faculty_id, f.name, f.mail, 'Supervision' as type
+            FROM ReqSupervisor r JOIN Faculty f ON r.sup_id = f.id
+            WHERE r.group_id = %s
+        """, (group_id,))
+        sup_requests = cursor.fetchall()
+
+        # Co-supervisor requests
+        cursor.execute("""
+            SELECT r.cosup_id as faculty_id, f.name, f.mail, 'Co-supervision' as type
+            FROM ReqCosupervisor r JOIN Faculty f ON r.cosup_id = f.id
+            WHERE r.group_id = %s
+        """, (group_id,))
+        cosup_requests = cursor.fetchall()
+
+        requests = sup_requests + cosup_requests
+
+    finally:
+        cursor.close()
+        conn.close()
+    return render_template("group_requests.html", requests=requests, group_id=group_id)
+
+@app.route("/cancel_request/<int:group_id>/<faculty_id>/<req_type>", methods=["POST"])
+def cancel_request(group_id, faculty_id, req_type):
+    if 'role' not in session or session['role'] != 'student':
+        return redirect(url_for('login_page'))
+    user_id = session['user_id']
+    conn = get_db_connection()
+    cursor = conn.cursor()
+    try:
+        cursor.execute("SELECT group_id FROM Student WHERE id = %s", (user_id,))
+        current_group = cursor.fetchone()[0]
+        if current_group != group_id:
+            return "<h1>You are not a member of this group</h1>"
+        if req_type == "Supervision":
+            cursor.execute("DELETE FROM ReqSupervisor WHERE group_id = %s AND sup_id = %s", (group_id, faculty_id))
+        elif req_type == "Co-supervision":
+            cursor.execute("DELETE FROM ReqCosupervisor WHERE group_id = %s AND cosup_id = %s", (group_id, faculty_id))
+        conn.commit()
+        return redirect(url_for('group_requests', group_id=group_id))
+    finally:
+        cursor.close()
+        conn.close()
+
+# Supervision Requests Page
+@app.route("/faculty_supervision_requests")
+def faculty_supervision_requests():
+    if 'role' not in session or session['role'] != 'faculty':
+        return redirect(url_for('login_page'))
+    user_id = session['user_id']
+    conn = get_db_connection()
+    cursor = conn.cursor(dictionary=True)
+    try:
+        cursor.execute("""
+            SELECT r.group_id, g.name, g.topic
+            FROM ReqSupervisor r
+            JOIN `Group` g ON r.group_id = g.id
+            WHERE r.sup_id = %s
+        """, (user_id,))
+        requests = cursor.fetchall()
+    finally:
+        cursor.close()
+        conn.close()
+    return render_template("faculty_supervision_requests.html", requests=requests)
+
+# Cosupervision Requests Page
+@app.route("/faculty_cosupervision_requests")
+def faculty_cosupervision_requests():
+    if 'role' not in session or session['role'] != 'faculty':
+        return redirect(url_for('login_page'))
+    user_id = session['user_id']
+    conn = get_db_connection()
+    cursor = conn.cursor(dictionary=True)
+    try:
+        cursor.execute("""
+            SELECT r.group_id, g.name, g.topic
+            FROM ReqCosupervisor r
+            JOIN `Group` g ON r.group_id = g.id
+            WHERE r.cosup_id = %s
+        """, (user_id,))
+        requests = cursor.fetchall()
+    finally:
+        cursor.close()
+        conn.close()
+    return render_template("faculty_cosupervision_requests.html", requests=requests)
+
+# Accept/Reject Supervision Request
+@app.route("/handle_supervision_request/<int:group_id>/<action>", methods=["POST"])
+def handle_supervision_request(group_id, action):
+    if 'role' not in session or session['role'] != 'faculty':
+        return redirect(url_for('login_page'))
+    user_id = session['user_id']
+    conn = get_db_connection()
+    cursor = conn.cursor()
+    try:
+        if action == "accept":
+            # Set supervisor for group
+            cursor.execute("UPDATE `Group` SET sup_id = %s WHERE id = %s", (user_id, group_id))
+            # Remove all other supervision requests for this group
+            cursor.execute("DELETE FROM ReqSupervisor WHERE group_id = %s", (group_id,))
+        elif action == "reject":
+            cursor.execute("DELETE FROM ReqSupervisor WHERE group_id = %s AND sup_id = %s", (group_id, user_id))
+        conn.commit()
+    finally:
+        cursor.close()
+        conn.close()
+    return redirect(url_for('faculty_supervision_requests'))
+
+# Accept/Reject Cosupervision Request
+@app.route("/handle_cosupervision_request/<int:group_id>/<action>", methods=["POST"])
+def handle_cosupervision_request(group_id, action):
+    if 'role' not in session or session['role'] != 'faculty':
+        return redirect(url_for('login_page'))
+    user_id = session['user_id']
+    conn = get_db_connection()
+    cursor = conn.cursor(dictionary=True)
+    try:
+        if action == "accept":
+            # Find empty cosup slot
+            cursor.execute("SELECT cosup1_id, cosup2_id FROM `Group` WHERE id = %s", (group_id,))
+            row = cursor.fetchone()
+            if not row['cosup1_id']:
+                cursor2 = conn.cursor()
+                cursor2.execute("UPDATE `Group` SET cosup1_id = %s WHERE id = %s", (user_id, group_id))
+                cursor2.close()
+            elif not row['cosup2_id']:
+                cursor2 = conn.cursor()
+                cursor2.execute("UPDATE `Group` SET cosup2_id = %s WHERE id = %s", (user_id, group_id))
+                cursor2.close()
+            # If both slots filled, remove all other cosupervision requests for this group
+            cursor.execute("SELECT cosup1_id, cosup2_id FROM `Group` WHERE id = %s", (group_id,))
+            row = cursor.fetchone()
+            if row['cosup1_id'] and row['cosup2_id']:
+                cursor2 = conn.cursor()
+                cursor2.execute("DELETE FROM ReqCosupervisor WHERE group_id = %s", (group_id,))
+                cursor2.close()
+            else:
+                cursor2 = conn.cursor()
+                cursor2.execute("DELETE FROM ReqCosupervisor WHERE group_id = %s AND cosup_id = %s", (group_id, user_id))
+                cursor2.close()
+        elif action == "reject":
+            cursor2 = conn.cursor()
+            cursor2.execute("DELETE FROM ReqCosupervisor WHERE group_id = %s AND cosup_id = %s", (group_id, user_id))
+            cursor2.close()
+        conn.commit()
+    finally:
+        cursor.close()
+        conn.close()
+    return redirect(url_for('faculty_cosupervision_requests'))
+
+# My Groups Page
+@app.route("/faculty_my_groups")
+def faculty_my_groups():
+    if 'role' not in session or session['role'] != 'faculty':
+        return redirect(url_for('login_page'))
+    user_id = session['user_id']
+    conn = get_db_connection()
+    cursor = conn.cursor(dictionary=True)
+    try:
+        cursor.execute("""
+            SELECT id, name, topic, sup_id, cosup1_id, cosup2_id
+            FROM `Group`
+            WHERE sup_id = %s OR cosup1_id = %s OR cosup2_id = %s
+        """, (user_id, user_id, user_id))
+        groups = cursor.fetchall()
+    finally:
+        cursor.close()
+        conn.close()
+    return render_template("faculty_my_groups.html", groups=groups)
 
 if __name__ == "__main__":
     app.run(debug=True)
