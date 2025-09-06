@@ -1,0 +1,54 @@
+<!-- templates/search_faculties.html -->
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Search Faculties</title>
+</head>
+<body>
+    <h1>Search Faculties</h1>
+
+    <form action="{{ url_for('search_faculties') }}" method="POST">
+        <label for="search_term">Search by ID or Name:</label>
+        <input type="text" id="search_term" name="search_term" value="{{ search_term }}">
+        <input type="submit" value="Search">
+    </form>
+
+    <table border="1">
+        <thead>
+            <tr>
+                <th>ID</th>
+                <th>Name</th>
+                <th>Email</th>
+                <th>Interests</th>
+                <th>Action</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for faculty in faculties %}
+            <tr>
+                <td>{{ faculty.id }}</td>
+                <td>{{ faculty.name }}</td>
+                <td>{{ faculty.mail }}</td>
+                <td>
+                    <ul>
+                        {% for interest in faculty.interests %}
+                        <li>{{ interest }}</li>
+                        {% endfor %}
+                    </ul>
+                </td>
+                <td><a href="{{ url_for('view_faculty_profile', faculty_id=faculty.id) }}">View Profile</a></td>
+            </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+
+    <a href="{{ url_for('student_dashboard') }}">Back to My Profile</a>
+    <a href="{{ url_for('logout') }}">Logout</a>
+
+    <footer>
+        <p>© 2025 BRACU Thesis Portal | Designed with Elegance</p>
+    </footer>
+</body>
+</html>
