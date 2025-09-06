@@ -1208,11 +1208,16 @@ def group_inbox(group_id):
                     (group_id, subject, remarks, filename, now)
                 )
             elif role == "student":
-                # Only allow reply to a faculty file
+                # Allow both reply and direct upload
                 if reply_file_id:
                     cursor.execute(
                         "INSERT INTO GroupFile (group_id, reply_file_id, subject, remarks, file_link, date) VALUES (%s, %s, %s, %s, %s, %s)",
                         (group_id, reply_file_id, subject, remarks, filename, now)
+                    )
+                else:
+                    cursor.execute(
+                        "INSERT INTO GroupFile (group_id, reply_file_id, subject, remarks, file_link, date) VALUES (%s, NULL, %s, %s, %s, %s)",
+                        (group_id, subject, remarks, filename, now)
                     )
             conn.commit()
             return redirect(url_for('group_inbox', group_id=group_id))
