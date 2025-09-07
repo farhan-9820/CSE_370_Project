@@ -144,18 +144,6 @@ Table GroupFile {
   date datetime
 }
 
-Table Meet {
-  group_id int
-  fac_id int
-  date_time datetime
-  duration int
-  status varchar
-
-  indexes {
-    (group_id, fac_id, date_time) [pk]
-  }
-}
-
 ref: Student.id < StudentInterests.stu_id
 ref: Student.id < StudentLinks.stu_id
 ref: Student.id < StudentPass.stu_id
@@ -182,6 +170,3 @@ ref: Faculty.id < FacultyFile.fac_id
 
 ref: Group.id < GroupFile.group_id
 ref: FacultyFile.id < GroupFile.reply_file_id
-
-ref: Group.id < Meet.group_id
-ref: Faculty.id < Meet.fac_id
